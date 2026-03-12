@@ -5,72 +5,30 @@ import Chip from "../components/Chip";
 import AgentChat from "../components/AgentChat";
 
 const PLATFORMS = [
-  {
-    id: "youtube",
-    label: "YouTube",
-    icon: "🔴",
-    accent: "#ff4444",
-    bg: "#1a0a0a",
-    border: "#ff444433",
-    keys: ["youtube"],
-    description: "Long-form VODs & full uploads"
-  },
-  {
-    id: "youtube_shorts",
-    label: "YouTube Shorts",
-    icon: "🔴",
-    accent: "#ff4444",
-    bg: "#1a0a0a",
-    border: "#ff444433",
-    keys: ["youtube_shorts"],
-    description: "Vertical short-form clips"
-  },
-  {
-    id: "tiktok",
-    label: "TikTok",
-    icon: "⬛",
-    accent: "#69c9d0",
-    bg: "#09171a",
-    border: "#69c9d033",
-    keys: ["tiktok"],
-    description: "Short clips · max 60s · hook in 2s"
-  },
-  {
-    id: "instagram_reels",
-    label: "Instagram Reels",
-    icon: "🟠",
-    accent: "#f97316",
-    bg: "#1a0f08",
-    border: "#f9731633",
-    keys: ["instagram_reels"],
-    description: "Reels · 6–10 hashtags · first line is the hook"
-  },
+  { id:"youtube",         label:"YouTube",          icon:"▶",  accent:"#ff4444", bg:"#1a0a0a", border:"#ff444430", keys:["youtube"],         description:"Long-form VODs & full stream uploads" },
+  { id:"youtube_shorts",  label:"YouTube Shorts",   icon:"▶",  accent:"#ff6b6b", bg:"#1a0c0c", border:"#ff6b6b30", keys:["youtube_shorts"],  description:"Vertical short clips · under 60s" },
+  { id:"tiktok",          label:"TikTok",           icon:"♪",  accent:"#69c9d0", bg:"#08161a", border:"#69c9d030", keys:["tiktok"],          description:"Short clips · hook in 2s · max 60s" },
+  { id:"instagram_reels", label:"Instagram Reels",  icon:"◈",  accent:"#f97316", bg:"#1a0e08", border:"#f9731630", keys:["instagram_reels"], description:"Reels · first line is the hook · 6–10 hashtags" },
 ];
 
 const STATUSES = [
-  { key: "ready_for_review", label: "Review",   color: "#eab308" },
-  { key: "approved",         label: "Approved", color: "#22c55e" },
-  { key: "rejected",         label: "Rejected", color: "#ef4444" },
+  { key:"ready_for_review", label:"For Review", color:"#eab308" },
+  { key:"approved",         label:"Approved",   color:"#22c55e" },
+  { key:"rejected",         label:"Rejected",   color:"#ef4444" },
 ];
 
-function ClipCard({ clip, accentColor }) {
+function ClipCard({ clip, accent }) {
   const sc = clip.clip_score;
-  const scoreColor = sc >= 90 ? "#22c55e" : sc >= 80 ? "#eab308" : sc >= 70 ? "#f97316" : "#ef4444";
+  const scoreColor = sc>=90?"#22c55e":sc>=80?"#eab308":sc>=70?"#f97316":"#ef4444";
   return (
-    <div style={{
-      background: "#ffffff08",
-      border: "1px solid " + accentColor + "22",
-      borderRadius: 10,
-      padding: "10px 12px",
-      marginBottom: 8,
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, flex: 1, marginRight: 8, color: C.text, lineHeight: 1.4 }}>
-          {clip.clip_summary.slice(0, 60)}...
+    <div style={{ background:"#ffffff07", border:"1px solid "+accent+"25", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+        <div style={{ fontSize:12, fontWeight:700, flex:1, marginRight:8, color:C.text, lineHeight:1.4 }}>
+          {clip.clip_summary.slice(0,58)}...
         </div>
-        <div style={{ fontSize: 18, fontWeight: 900, color: scoreColor, flexShrink: 0 }}>{sc}</div>
+        <div style={{ fontSize:17, fontWeight:900, color:scoreColor, flexShrink:0 }}>{sc}</div>
       </div>
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+      <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
         <Chip label={clip.moment_type} color={momentColor(clip.moment_type)} sm />
         <Chip label={clip.content_pillar} color={C.purple} sm />
       </div>
@@ -79,97 +37,51 @@ function ClipCard({ clip, accentColor }) {
 }
 
 function PlatformSection({ platform, clips }) {
-  const platformClips = clips.filter(c =>
-    platform.keys.some(k => c.platforms?.includes(k))
-  );
-
+  const platformClips = clips.filter(c => platform.keys.some(k => c.platforms?.includes(k)));
   return (
-    <div style={{
-      background: platform.bg,
-      border: "1px solid " + platform.border,
-      borderRadius: 14,
-      padding: "20px",
-      marginBottom: 16,
-    }}>
-      {/* Platform Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-        <div style={{
-          width: 36, height: 36,
-          background: platform.accent + "22",
-          border: "1px solid " + platform.accent + "55",
-          borderRadius: 10,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 18
-        }}>
+    <div style={{ background:platform.bg, border:"1px solid "+platform.border, borderRadius:14, padding:20, marginBottom:14 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
+        <div style={{ width:38, height:38, background:platform.accent+"20", border:"1px solid "+platform.accent+"44", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, color:platform.accent, fontWeight:900 }}>
           {platform.icon}
         </div>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: platform.accent }}>{platform.label}</div>
-          <div style={{ fontSize: 11, color: C.muted }}>{platform.description}</div>
+          <div style={{ fontSize:15, fontWeight:800, color:platform.accent }}>{platform.label}</div>
+          <div style={{ fontSize:11, color:C.muted }}>{platform.description}</div>
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+        <div style={{ marginLeft:"auto", display:"flex", gap:6, flexWrap:"wrap" }}>
           {STATUSES.map(s => {
-            const count = platformClips.filter(c => c.status === s.key).length;
-            return count > 0 ? (
-              <span key={s.key} style={{
-                background: s.color + "22",
-                color: s.color,
-                borderRadius: 8,
-                padding: "2px 8px",
-                fontSize: 11,
-                fontWeight: 700
-              }}>
-                {count} {s.label}
+            const n = platformClips.filter(c => c.status===s.key).length;
+            return n > 0 ? (
+              <span key={s.key} style={{ background:s.color+"20", color:s.color, borderRadius:8, padding:"2px 9px", fontSize:11, fontWeight:700 }}>
+                {n} {s.label}
               </span>
             ) : null;
           })}
-          {platformClips.length === 0 && (
-            <span style={{ fontSize: 11, color: C.muted }}>No content yet</span>
-          )}
+          {platformClips.length===0 && <span style={{ fontSize:11, color:C.muted }}>No content yet</span>}
         </div>
       </div>
-
-      {/* Divider */}
-      <div style={{ borderTop: "1px solid " + platform.accent + "22", margin: "14px 0" }} />
-
-      {/* Status Columns */}
+      <div style={{ borderTop:"1px solid "+platform.accent+"18", margin:"14px 0" }} />
       {platformClips.length > 0 ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
           {STATUSES.map(s => {
-            const group = platformClips.filter(c => c.status === s.key);
+            const group = platformClips.filter(c => c.status===s.key);
             return (
               <div key={s.key}>
-                <div style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  marginBottom: 10
-                }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: s.color, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                    {s.label}
-                  </span>
-                  <span style={{
-                    background: s.color + "22", color: s.color,
-                    borderRadius: 8, padding: "1px 7px",
-                    fontSize: 10, fontWeight: 700
-                  }}>{group.length}</span>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:s.color, textTransform:"uppercase", letterSpacing:0.5 }}>{s.label}</span>
+                  <span style={{ background:s.color+"20", color:s.color, borderRadius:8, padding:"1px 7px", fontSize:10, fontWeight:700 }}>{group.length}</span>
                 </div>
                 {group.length > 0
-                  ? group.map(c => <ClipCard key={c.clip_id} clip={c} accentColor={platform.accent} />)
-                  : <div style={{
-                      border: "1px dashed " + platform.accent + "22",
-                      borderRadius: 8, padding: "14px 0",
-                      textAlign: "center", color: C.muted, fontSize: 11
-                    }}>Empty</div>
+                  ? group.map(c => <ClipCard key={c.clip_id} clip={c} accent={platform.accent} />)
+                  : <div style={{ border:"1px dashed "+platform.accent+"20", borderRadius:8, padding:"14px 0", textAlign:"center", color:C.muted, fontSize:11 }}>Empty</div>
                 }
               </div>
             );
           })}
         </div>
       ) : (
-        <div style={{
-          textAlign: "center", padding: "20px 0",
-          color: C.muted, fontSize: 12
-        }}>
-          No clips routed to {platform.label} yet — deposit a VOD to get started
+        <div style={{ textAlign:"center", padding:"18px 0", color:C.muted, fontSize:12 }}>
+          No clips routed to {platform.label} yet — deposit a VOD above to get started
         </div>
       )}
     </div>
@@ -178,34 +90,108 @@ function PlatformSection({ platform, clips }) {
 
 export default function ContentStudioPage({ clips, setClips }) {
   const [chatAgent, setChatAgent] = useState(null);
+  const [dragging, setDragging]   = useState(false);
+  const [vods, setVods]           = useState([]);
+  const [processing, setProcessing] = useState(null);
+
+  function handleDrop(e) {
+    e.preventDefault(); setDragging(false);
+    processVods(Array.from(e.dataTransfer?.files||[]));
+  }
+  function handleFileInput(e) { processVods(Array.from(e.target.files||[])); }
+  function processVods(files) {
+    if (!files.length) return;
+    files.forEach(file => {
+      const vod = { id:Date.now()+Math.random(), name:file.name, size:(file.size/1e6).toFixed(1)+" MB", status:"processing" };
+      setVods(v => [...v, vod]);
+      setProcessing(file.name);
+      setTimeout(() => {
+        setVods(v => v.map(x => x.id===vod.id ? {...x, status:"done"} : x));
+        setProcessing(null);
+      }, 2400);
+    });
+  }
 
   return (
-    <div style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
+    <div style={{ padding:24, maxWidth:1200, margin:"0 auto" }}>
 
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize: 17, fontWeight: 800 }}>Content Studio</div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>
-            Clips routed by platform — ready for review, approval, or rejection
-          </div>
+          <div style={{ fontSize:17, fontWeight:800 }}>Content Studio</div>
+          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Deposit your Twitch VODs — clips are auto-routed to each platform below</div>
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display:"flex", gap:6 }}>
           {CS_AGENTS.map(a => (
-            <button key={a.id} onClick={() => setChatAgent(a)} title={a.name}
-              style={{ background: a.color + "15", border: "1px solid " + a.color + "33", borderRadius: 7, width: 30, height: 30, fontSize: 14, cursor: "pointer" }}>
+            <button key={a.id} onClick={()=>setChatAgent(a)} title={a.name}
+              style={{ background:a.color+"15", border:"1px solid "+a.color+"33", borderRadius:7, width:30, height:30, fontSize:14, cursor:"pointer" }}>
               {a.icon}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Platform Sections */}
-      {PLATFORMS.map(p => (
-        <PlatformSection key={p.id} platform={p} clips={clips} />
-      ))}
+      {/* Twitch VOD Drop Zone */}
+      <div style={{ background:"#18061a", border:"2px dashed "+(dragging?"#9146ff":"#9146ff44"), borderRadius:14, marginBottom:20, overflow:"hidden" }}>
+        {/* Twitch header strip */}
+        <div style={{ background:"#9146ff22", borderBottom:"1px solid #9146ff33", padding:"10px 20px", display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{ width:28, height:28, background:"#9146ff", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>
+            🟣
+          </div>
+          <div>
+            <div style={{ fontSize:13, fontWeight:800, color:"#9146ff" }}>Twitch VOD Deposit</div>
+            <div style={{ fontSize:11, color:C.muted }}>Drop your stream recordings here — clips will be extracted and routed to each platform</div>
+          </div>
+          {processing && (
+            <div style={{ marginLeft:"auto", fontSize:12, color:"#9146ff", fontWeight:600 }}>
+              ⚙️ Processing {processing}...
+            </div>
+          )}
+        </div>
 
-      {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
+        {/* Drop area */}
+        <div
+          onDragOver={e=>{e.preventDefault();setDragging(true);}}
+          onDragLeave={()=>setDragging(false)}
+          onDrop={handleDrop}
+          onClick={()=>document.getElementById("vod-input").click()}
+          style={{ padding:"28px 20px", textAlign:"center", cursor:"pointer", transition:"background 0.2s", background:dragging?"#9146ff11":"transparent" }}
+        >
+          <input id="vod-input" type="file" accept="video/*" multiple onChange={handleFileInput} style={{ display:"none" }} />
+          <div style={{ fontSize:32, marginBottom:8 }}>🎮</div>
+          <div style={{ fontWeight:700, fontSize:14, color:C.text, marginBottom:4 }}>Drag & drop your Twitch VOD</div>
+          <div style={{ fontSize:12, color:C.muted }}>or click to browse — MP4, MOV, AVI supported</div>
+        </div>
+
+        {/* Deposited VODs list */}
+        {vods.length > 0 && (
+          <div style={{ borderTop:"1px solid #9146ff22", padding:"12px 20px", display:"flex", flexDirection:"column", gap:8 }}>
+            {vods.map(v => (
+              <div key={v.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:"#9146ff0e", border:"1px solid #9146ff22", borderRadius:10, padding:"8px 14px" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <span style={{ fontSize:16 }}>🎥</span>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{v.name}</div>
+                    <div style={{ fontSize:11, color:C.muted }}>{v.size}</div>
+                  </div>
+                </div>
+                {v.status==="processing"
+                  ? <span style={{ fontSize:11, color:"#9146ff", fontWeight:600 }}>⚙️ Processing...</span>
+                  : <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ fontSize:11, color:"#22c55e", fontWeight:600 }}>✓ Routed to platforms</span>
+                      <span style={{ fontSize:13 }}>▶ ♪ ◈</span>
+                    </div>
+                }
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Platform Sections */}
+      {PLATFORMS.map(p => <PlatformSection key={p.id} platform={p} clips={clips} />)}
+
+      {chatAgent && <AgentChat agent={chatAgent} onClose={()=>setChatAgent(null)} />}
     </div>
   );
 }
