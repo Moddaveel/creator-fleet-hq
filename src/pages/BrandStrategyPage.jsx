@@ -31,13 +31,8 @@ export default function BrandStrategyPage() {
       </Card>
       <Card>
         <Sect>Agents</Sect>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:8 }}>
-          {BS_AGENTS.map(a => (
-            <div key={a.id} onClick={() => setChatAgent(a)} style={{ background:a.color+"11", border:"1px solid "+a.color+"33", borderRadius:10, padding:"12px 8px", cursor:"pointer", textAlign:"center" }}>
-              <div style={{ fontSize:20, marginBottom:4 }}>{a.icon}</div>
-              <div style={{ fontSize:11, fontWeight:700, color:a.color }}>{a.name}</div>
-            </div>
-          ))}
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {BS_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
         </div>
       </Card>
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}

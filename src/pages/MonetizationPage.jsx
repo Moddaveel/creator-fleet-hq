@@ -15,7 +15,7 @@ export default function MonetizationPage() {
     <div style={{ padding:24, maxWidth:1000, margin:"0 auto" }}>
       <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20 }}>
         <div style={{ fontSize:17, fontWeight:800 }}>Monetization & Partnership</div>
-        <div style={{ display:"flex", gap:6 }}>{MONO_AGENTS.map(a => <button key={a.id} onClick={() => setChatAgent(a)} title={a.name} style={{ background:a.color+"15", border:"1px solid "+a.color+"33", borderRadius:7, width:30, height:30, fontSize:14, cursor:"pointer" }}>{a.icon}</button>)}</div>
+        <div style={{ display:"flex", gap:6 }}>{MONO_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}</div>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:20 }}>
         {[{label:"Est. MRR",val:"$3,200",color:C.green},{label:"Pipeline Value",val:"$12,800",color:C.yellow},{label:"Avg Fit Score",val:"82/100",color:C.blue}].map((s,i) => (

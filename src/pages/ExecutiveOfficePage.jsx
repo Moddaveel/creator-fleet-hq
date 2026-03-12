@@ -16,13 +16,8 @@ export default function ExecutiveOfficePage({ approvals }) {
             <div style={{ width:40, height:40, background:"linear-gradient(135deg,"+C.purple+","+C.neon+")", borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>⚡</div>
             <div><div style={{ fontWeight:800, fontSize:16 }}>Executive Office</div><div style={{ fontSize:11, color:C.green }}>● Online — Publishing Layer Active</div></div>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-            {EO_AGENTS.map(a => (
-              <div key={a.id} onClick={() => setChatAgent(a)} style={{ background:a.color+"11", border:"1px solid "+a.color+"33", borderRadius:10, padding:12, cursor:"pointer", display:"flex", alignItems:"center", gap:10 }}>
-                <span style={{ fontSize:20 }}>{a.icon}</span>
-                <div><div style={{ fontSize:12, fontWeight:700, color:a.color }}>{a.name}</div><div style={{ fontSize:10, color:C.muted }}>{a.role}</div></div>
-              </div>
-            ))}
+          <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+            {EO_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
           </div>
         </Card>
         <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
@@ -35,7 +30,7 @@ export default function ExecutiveOfficePage({ approvals }) {
               </div>
             ))}
           </Card>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+          <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
             {[{label:"Agents",val:"26",color:C.purple},{label:"Approvals",val:approvals.length,color:C.yellow},{label:"Urgent",val:approvals.filter(a=>a.priority==="urgent").length,color:C.red},{label:"Ralph Signals",val:8,color:C.neon}].map((s,i) => (
               <div key={i} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:10, padding:"12px 14px", textAlign:"center" }}>
                 <div style={{ fontSize:22, fontWeight:900, color:s.color }}>{s.val}</div>
