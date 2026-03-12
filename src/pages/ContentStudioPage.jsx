@@ -119,7 +119,7 @@ export default function ContentStudioPage({ clips, setClips }) {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:17, fontWeight:800 }}>Content Studio</div>
-          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Deposit your Twitch VODs — clips are auto-routed to each platform below</div>
+          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Drop any video into the Drop Zone — clips are auto-routed to each platform below</div>
         </div>
         <div style={{ display:"flex", gap:6 }}>
           {CS_AGENTS.map(a => (
@@ -139,8 +139,8 @@ export default function ContentStudioPage({ clips, setClips }) {
             🟣
           </div>
           <div>
-            <div style={{ fontSize:13, fontWeight:800, color:"#9146ff" }}>Twitch VOD Deposit</div>
-            <div style={{ fontSize:11, color:C.muted }}>Drop your stream recordings here — clips will be extracted and routed to each platform</div>
+            <div style={{ fontSize:13, fontWeight:800, color:"#9146ff" }}>Drop Zone</div>
+            <div style={{ fontSize:11, color:C.muted }}>Drop any video — clips are extracted and routed to each platform below</div>
           </div>
           {processing && (
             <div style={{ marginLeft:"auto", fontSize:12, color:"#9146ff", fontWeight:600 }}>
