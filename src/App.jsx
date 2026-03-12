@@ -28,7 +28,7 @@ export default function App() {
   const draftPubN=publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="draft").length,0);
   return (
     <div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Inter',system-ui,sans-serif",fontSize:14}}>
-      <div style={{background:C.card,borderBottom:"1px solid "+C.border,padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:54,position:"sticky",top:0,zIndex:200}}>
+      <div style={{background:"#1a1025",borderBottom:"1px solid "+C.border,padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:54,position:"sticky",top:0,zIndex:200}}>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           <div style={{width:28,height:28,background:"linear-gradient(135deg,"+C.purple+","+C.neon+")",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>⚡</div>
           <span style={{fontWeight:800,fontSize:15,letterSpacing:"-0.02em"}}>Creator Fleet HQ</span>
@@ -41,7 +41,7 @@ export default function App() {
           {scheduledN>0&&<div onClick={()=>setPage("publishing")} style={{background:C.blue+"22",border:"1px solid "+C.blue+"44",borderRadius:8,padding:"5px 12px",color:C.blue,fontSize:12,fontWeight:700,cursor:"pointer"}}>{"📅 "+scheduledN+" Scheduled"}</div>}
         </div>
       </div>
-      <div style={{background:C.card,borderBottom:"1px solid "+C.border,padding:"0 20px",display:"flex",position:"sticky",top:54,zIndex:199,overflowX:"auto"}}>
+      <div style={{background:"#110e1a",borderBottom:"1px solid "+C.border,padding:"0 20px",display:"flex",position:"sticky",top:54,zIndex:199,overflowX:"auto"}}>
         {NAV.map(n=>{const active=page===n.id;const badge=n.id==="approvals"&&approvals.length>0?approvals.length:n.id==="publishing"&&draftPubN>0?draftPubN:null;const badgeColor=n.id==="approvals"?C.red:C.yellow;return(<button key={n.id} onClick={()=>setPage(n.id)} style={{background:active?C.purple+"22":"transparent",border:"none",borderBottom:"2px solid "+(active?C.purple:"transparent"),color:active?C.purple:C.muted,padding:"11px 14px",fontSize:12,fontWeight:active?700:400,cursor:"pointer",display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap"}}><span>{n.icon}</span><span>{n.label}</span>{badge&&<span style={{background:badgeColor,color:"#fff",borderRadius:10,padding:"1px 6px",fontSize:10,fontWeight:800}}>{badge}</span>}</button>);})}
       </div>
       <div>
