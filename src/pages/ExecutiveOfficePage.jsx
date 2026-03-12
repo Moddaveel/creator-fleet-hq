@@ -28,7 +28,7 @@ export default function ExecutiveOfficePage({ approvals }) {
           <Card>
             <Sect>System Alerts</Sect>
             {ALERTS.map((a, i) => (
-              <div key={i} style={{ display:"flex", gap:8, padding:"7px 0", borderBottom:i<ALERTS.length-1?"1px solid "+C.border:"none" }}>
+              <div key={i} style={{ display:"flex", flexWrap:"wrap", gap:8, padding:"7px 0", borderBottom:i<ALERTS.length-1?"1px solid "+C.border:"none" }}>
                 <span>{a.type==="warning"?"⚠️":a.type==="success"?"✅":"ℹ️"}</span>
                 <span style={{ fontSize:12 }}>{a.msg}</span>
               </div>
