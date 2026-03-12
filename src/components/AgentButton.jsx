@@ -381,7 +381,7 @@ export default function AgentButton({ agent, onClick }) {
       setVisible(true);
       timerRef.current = setInterval(() => {
         setDialogueIdx(i => (i + 1) % lines.length);
-      }, 2800);
+      }, 5000);
     } else {
       clearInterval(timerRef.current);
       setTimeout(() => setVisible(false), 200);
