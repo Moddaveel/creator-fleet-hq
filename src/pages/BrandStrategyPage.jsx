@@ -5,6 +5,7 @@ import Chip from "../components/Chip";
 import Card from "../components/Card";
 import Sect from "../components/Sect";
 import AgentChat from "../components/AgentChat";
+import AgentButton from "../components/AgentButton";
 
 export default function BrandStrategyPage() {
   const [chatAgent, setChatAgent] = useState(null);

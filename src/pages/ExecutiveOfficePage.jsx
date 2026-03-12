@@ -4,6 +4,7 @@ import { EO_AGENTS } from "../data/agents";
 import Card from "../components/Card";
 import Sect from "../components/Sect";
 import AgentChat from "../components/AgentChat";
+import AgentButton from "../components/AgentButton";
 
 export default function ExecutiveOfficePage({ approvals }) {
   const [chatAgent, setChatAgent] = useState(null);

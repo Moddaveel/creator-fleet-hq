@@ -2,6 +2,7 @@ import { useState } from "react";
 import { C, momentColor } from "../constants";
 import { CS_AGENTS } from "../data/agents";
 import Chip from "../components/Chip";
+import AgentButton from "../components/AgentButton";
 import AgentChat from "../components/AgentChat";
 
 const PLATFORMS = [
@@ -123,10 +124,7 @@ export default function ContentStudioPage({ clips, setClips }) {
         </div>
         <div style={{ display:"flex", gap:6 }}>
           {CS_AGENTS.map(a => (
-            <button key={a.id} onClick={()=>setChatAgent(a)} title={a.name}
-              style={{ background:a.color+"15", border:"1px solid "+a.color+"33", borderRadius:7, width:30, height:30, fontSize:14, cursor:"pointer" }}>
-              {a.icon}
-            </button>
+            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />
           ))}
         </div>
       </div>

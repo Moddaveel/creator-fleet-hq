@@ -5,6 +5,7 @@ import { DEAL_PIPELINE } from "../data/deals";
 import Chip from "../components/Chip";
 import Card from "../components/Card";
 import AgentChat from "../components/AgentChat";
+import AgentButton from "../components/AgentButton";
 
 export default function MonetizationPage() {
   const [deals, setDeals] = useState(DEAL_PIPELINE);
