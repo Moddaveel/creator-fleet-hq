@@ -1,0 +1,1 @@
+export default function Chip({label,color,sm}){return(<span style={{background:color+"22",color,border:"1px solid "+color+"44",borderRadius:6,padding:sm?"1px 6px":"2px 8px",fontSize:sm?10:11,fontWeight:600,whiteSpace:"nowrap"}}>{label}</span>);}
