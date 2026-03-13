@@ -77,7 +77,7 @@ const platforms = [
   { name:"Twitch",    icon:"🟣", accent:"#9146FF", bg:"#18061a", border:"rgba(145,70,255,0.45)",  trend:"+8.2%",  stats:[["Followers","8,420"],["Avg Viewers","312"],["Clip Views","24.3K"]] },
   { name:"YouTube",  icon:"🔴", accent:"#FF0000", bg:"#1a0a0a", border:"rgba(255,0,0,0.45)",     trend:"+12.4%", stats:[["Subscribers","5,100"],["Watch Time","1.2K hrs"],["CTR","6.8%"]] },
   { name:"TikTok",   icon:"⚫", accent:"#69c9d0", bg:"#08161a", border:"rgba(105,201,208,0.45)", trend:"+31.0%", stats:[["Followers","22,800"],["Avg Views","4,100"],["Shares","890"]] },
-  { name:"Instagram",icon:"🟠", accent:"#E1306C", bg:"#1a080e", border:"rgba(225,48,108,0.45)", trend:"+5.1%",  stats:[["Followers","3,200"],["Reach Rate","11.2%"],["Saves","340"]] },
+  { name:"Instagram",icon:"🟠", accent:"#f97316", bg:"#1a0a00", border:"rgba(249,115,22,0.45)", trend:"+5.1%",  stats:[["Followers","3,200"],["Reach Rate","11.2%"],["Saves","340"]] },
 ];
 
 const statCards = [
@@ -174,7 +174,7 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
               <Line type="monotone" dataKey="twitch"    stroke="#9146FF" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="youtube"   stroke="#FF0000" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="tiktok"    stroke="#69c9d0" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="instagram" stroke="#E1306C" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="instagram" stroke="#f97316" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </Card>
