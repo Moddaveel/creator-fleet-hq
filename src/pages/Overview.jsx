@@ -18,14 +18,23 @@ const clipPerfData = [
 ];
 
 const platforms = [
-  { name:"Twitch",    icon:"🟣", accent:"#9146FF", bg:"#18061a", border:"rgba(145,70,255,0.45)", trend:"+8.2%",  stats:[["Followers","8,420"],["Avg Viewers","312"],["Clip Views","24.3K"]] },
+  { name:"Twitch",    icon:"🟣", accent:"#9146FF", bg:"#18061a", border:"rgba(145,70,255,0.45)",  trend:"+8.2%",  stats:[["Followers","8,420"],["Avg Viewers","312"],["Clip Views","24.3K"]] },
   { name:"YouTube",  icon:"🔴", accent:"#FF0000", bg:"#1a0a0a", border:"rgba(255,0,0,0.45)",     trend:"+12.4%", stats:[["Subscribers","5,100"],["Watch Time","1.2K hrs"],["CTR","6.8%"]] },
   { name:"TikTok",   icon:"⚫", accent:"#69c9d0", bg:"#08161a", border:"rgba(105,201,208,0.45)", trend:"+31.0%", stats:[["Followers","22,800"],["Avg Views","4,100"],["Shares","890"]] },
   { name:"Instagram",icon:"🟠", accent:"#E1306C", bg:"#1a080e", border:"rgba(225,48,108,0.45)", trend:"+5.1%",  stats:[["Followers","3,200"],["Reach Rate","11.2%"],["Saves","340"]] },
 ];
 
+const statCards = [
+  { label:"Pending Approvals", icon:"✅", accent:"#eab308", bg:"#16120a", border:"rgba(234,179,8,0.45)",   btn:"Approvals",   nav:"approvals"    },
+  { label:"Clips in Studio",   icon:"🎬", accent:"#9146FF", bg:"#18061a", border:"rgba(145,70,255,0.45)",  btn:"Studio",      nav:"studio"       },
+  { label:"Posts Scheduled",   icon:"🚀", accent:"#3b82f6", bg:"#080e1a", border:"rgba(59,130,246,0.45)",  btn:"Publishing",  nav:"publishing"   },
+  { label:"Active Deals",      icon:"💰", accent:"#22c55e", bg:"#08160e", border:"rgba(34,197,94,0.45)",   btn:"Monetization",nav:"monetization" },
+];
+
 export default function Overview({ approvals, clips, publishQueue, navigateTo }) {
   const scheduled = publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="scheduled").length,0);
+  const statVals = [approvals.length, clips.length, scheduled, 4];
+
   return (
     <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
       <Sect>Platform KPIs — This Week</Sect>
@@ -51,6 +60,24 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
           </div>
         ))}
       </div>
+
+      <Sect>Operations</Sect>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:20 }}>
+        {statCards.map((s, i) => (
+          <div key={s.nav} style={{ background:s.bg, border:"1px solid "+s.border, borderRadius:14, padding:18 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+              <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>
+                {s.icon}
+              </div>
+              <div style={{ fontSize:12, fontWeight:700, color:s.accent }}>{s.label}</div>
+            </div>
+            <div style={{ borderTop:"1px solid "+s.accent+"18", marginBottom:10 }} />
+            <div style={{ fontSize:32, fontWeight:900, color:s.accent, marginBottom:10 }}>{statVals[i]}</div>
+            <button onClick={() => navigateTo(s.nav)} style={{ width:"100%", background:s.accent+"15", border:"1px solid "+s.accent+"33", borderRadius:7, padding:"6px 0", color:s.accent, fontSize:11, fontWeight:700, cursor:"pointer" }}>{s.btn} →</button>
+          </div>
+        ))}
+      </div>
+
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:16 }}>
         <Card>
           <Sect>Follower Growth — 4 Weeks</Sect>
@@ -65,20 +92,7 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
           </ResponsiveContainer>
         </Card>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
-        {[
-          { label:"Pending Approvals", val:approvals.length, color:C.yellow, btn:"Approvals", nav:"approvals" },
-          { label:"Clips in Studio",   val:clips.length,     color:C.purple, btn:"Studio",     nav:"studio" },
-          { label:"Posts Scheduled",   val:scheduled,        color:C.blue,   btn:"Publishing", nav:"publishing" },
-          { label:"Active Deals",      val:4,                color:C.green,  btn:"Monetization", nav:"monetization" },
-        ].map((s,i) => (
-          <Card key={i} style={{ textAlign:"center" }}>
-            <div style={{ fontSize:28, fontWeight:900, color:s.color, marginBottom:4 }}>{s.val}</div>
-            <div style={{ fontSize:12, color:C.muted, marginBottom:10 }}>{s.label}</div>
-            <button onClick={() => navigateTo(s.nav)} style={{ width:"100%", background:s.color+"15", border:"1px solid "+s.color+"33", borderRadius:7, padding:"6px 0", color:s.color, fontSize:11, fontWeight:700, cursor:"pointer" }}>{s.btn} →</button>
-          </Card>
-        ))}
-      </div>
+
       {approvals.filter(a=>a.priority==="urgent").length > 0 && (
         <div onClick={() => navigateTo("approvals")} style={{ marginTop:16, background:C.red+"11", border:"1px solid "+C.red+"33", borderRadius:12, padding:14, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <div>
