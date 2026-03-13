@@ -13,7 +13,7 @@ import BrandStrategyPage from "./pages/BrandStrategyPage";
 import MonetizationPage from "./pages/MonetizationPage";
 import ExecutiveOfficePage from "./pages/ExecutiveOfficePage";
 
-const NAV=[{id:"overview",label:"Overview",icon:"🏠"},{id:"studio",label:"Content Studio",icon:"🎬"},{id:"approvals",label:"Approvals",icon:"✅"},{id:"publishing",label:"Publishing",icon:"🚀"},{id:"brand",label:"Brand Strategy",icon:"🎯"},{id:"monetization",label:"Monetization",icon:"💰"},{id:"executive",label:"Executive Office",icon:"🏢"}];
+const NAV=[{id:"overview",label:"Overview",icon:"🏠"},{id:"studio",label:"Content Studio",icon:"🎬"},{id:"approvals",label:"Approvals",icon:"✅"},{id:"publishing",label:"Publishing",icon:"🚀"},{id:"brand",label:"Brand Strategy",icon:"🎯"},{id:"monetization",label:"Monetization",icon:"💰"},{id:"executive",label:"The Collective",icon:"⚡"}];
 const VALID_PAGES = NAV.map(n => n.id);
 
 export default function App() {
@@ -56,7 +56,7 @@ export default function App() {
         {NAV.map(n=>{const active=page===n.id;const [hov,setHov]=useState(false);const badge=n.id==="approvals"&&approvals.length>0?approvals.length:n.id==="publishing"&&draftPubN>0?draftPubN:null;const badgeColor=n.id==="approvals"?C.red:C.yellow;return(<button key={n.id} onClick={()=>navigateTo(n.id)} style={{background:active?C.purple+"33":hov?"#a855f722":"transparent",border:"none",borderBottom:"2px solid "+(active?C.purple:hov?C.purple+"88":"transparent"),color:active?C.purple:hov?C.text:C.muted,padding:"11px 14px",fontSize:12,fontWeight:active?700:400,cursor:"pointer",display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",transition:"all 0.15s ease"}} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}><span>{n.icon}</span><span>{n.label}</span>{badge&&<span style={{background:badgeColor,color:"#fff",borderRadius:10,padding:"1px 6px",fontSize:10,fontWeight:800}}>{badge}</span>}</button>);})}
       </div>
       <div>
-        {page==="executive"&&<ExecutiveOfficePage approvals={approvals}/>}
+        {page==="executive"&&<ExecutiveOfficePage approvals={approvals} navigateTo={navigateTo}/>}
         {page==="overview"&&<Overview approvals={approvals} clips={clips} publishQueue={publishQueue} navigateTo={navigateTo}/>}
         {page==="approvals"&&<ApprovalsPage items={approvals} setItems={setApprovals} toast={toast} onApproveAndSchedule={handleApproveAndSchedule}/>}
         {page==="studio"&&<ContentStudioPage clips={clips} setClips={setClips}/>}
