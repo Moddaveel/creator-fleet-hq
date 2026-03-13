@@ -5,7 +5,6 @@ import Chip from "../components/Chip";
 import Card from "../components/Card";
 import Sect from "../components/Sect";
 
-// --- 52 weeks of growth data (1 year) ---
 const allGrowthData = [
   {label:"Jan W1", twitch:6100,youtube:3800,tiktok:9200,instagram:2700},
   {label:"Jan W2", twitch:6250,youtube:3900,tiktok:9800,instagram:2730},
@@ -90,41 +89,39 @@ const statCards = [
 
 const fmtK = v => v >= 1000 ? (v/1000).toFixed(v>=10000?0:1)+"K" : v;
 
-function CustomLegend({ payload }) {
-  return (
-    <div style={{ display:"flex", gap:16, justifyContent:"center", paddingTop:8 }}>
-      {payload.map(e => (
-        <div key={e.dataKey} style={{ display:"flex", alignItems:"center", gap:5 }}>
-          <div style={{ width:24, height:3, background:e.color, borderRadius:2 }} />
-          <span style={{ fontSize:11, color:C.muted, textTransform:"capitalize" }}>{e.dataKey}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function Overview({ approvals, clips, publishQueue, navigateTo }) {
   const scheduled = publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="scheduled").length,0);
   const statVals = [approvals.length, clips.length, scheduled, 4];
   const [zoom, setZoom] = useState("1M");
+  const urgentApprovals = approvals.filter(a => a.priority === "urgent");
 
   const growthData = useMemo(() => {
     const weeks = ZOOM_OPTIONS.find(o => o.label === zoom)?.weeks ?? 4;
     return allGrowthData.slice(-weeks);
   }, [zoom]);
 
-  // Only show month label at first week of each month
   const tickFormatter = (val, idx) => {
     if (idx === 0) return val.split(" ")[0];
     const prev = growthData[idx - 1];
     if (!prev) return "";
-    const curMonth = val.split(" ")[0];
-    const prevMonth = prev.label.split(" ")[0];
-    return curMonth !== prevMonth ? curMonth : "";
+    return val.split(" ")[0] !== prev.label.split(" ")[0] ? val.split(" ")[0] : "";
   };
 
   return (
     <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
+
+      {/* 1 — ALERTS */}
+      {urgentApprovals.length > 0 && (
+        <div onClick={() => navigateTo("approvals")} style={{ marginBottom:20, background:C.red+"11", border:"1px solid "+C.red+"33", borderRadius:12, padding:14, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div>
+            <div style={{ fontWeight:700, color:C.red, marginBottom:2 }}>{"🔴 "+urgentApprovals.length+" Urgent Approvals Pending"}</div>
+            <div style={{ fontSize:12, color:C.muted }}>{urgentApprovals.map(a=>a.title).join(" · ")}</div>
+          </div>
+          <span style={{ color:C.red }}>→</span>
+        </div>
+      )}
+
+      {/* 2 — PLATFORM KPIs */}
       <Sect>Platform KPIs — This Week</Sect>
       <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
         {platforms.map(p => (
@@ -145,22 +142,8 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
         ))}
       </div>
 
-      <Sect>Operations</Sect>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:20 }}>
-        {statCards.map((s, i) => (
-          <div key={s.nav} style={{ background:s.bg, border:"1px solid "+s.border, borderRadius:14, padding:18 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-              <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
-              <div style={{ fontSize:12, fontWeight:700, color:s.accent }}>{s.label}</div>
-            </div>
-            <div style={{ borderTop:"1px solid "+s.accent+"18", marginBottom:10 }} />
-            <div style={{ fontSize:32, fontWeight:900, color:s.accent, marginBottom:10 }}>{statVals[i]}</div>
-            <button onClick={() => navigateTo(s.nav)} style={{ width:"100%", background:s.accent+"15", border:"1px solid "+s.accent+"33", borderRadius:7, padding:"6px 0", color:s.accent, fontSize:11, fontWeight:700, cursor:"pointer" }}>{s.btn} →</button>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:16 }}>
+      {/* 3 — CHARTS */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:20 }}>
         <Card>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
             <Sect>Follower Growth</Sect>
@@ -178,7 +161,16 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
               <XAxis dataKey="label" stroke={C.muted} fontSize={10} tick={{fill:C.muted,fontSize:10}} tickFormatter={tickFormatter} interval={0} />
               <YAxis stroke={C.muted} fontSize={10} tick={{fill:C.muted,fontSize:10}} width={40} tickFormatter={fmtK} />
               <Tooltip contentStyle={{background:C.card,border:"1px solid rgba(255,255,255,0.13)",borderRadius:8,fontSize:12}} labelStyle={{color:C.text}} formatter={(v,n)=>[v.toLocaleString(), n.charAt(0).toUpperCase()+n.slice(1)]} />
-              <Legend content={<CustomLegend />} />
+              <Legend content={({ payload }) => (
+                <div style={{ display:"flex", gap:16, justifyContent:"center", paddingTop:8 }}>
+                  {payload.map(e => (
+                    <div key={e.dataKey} style={{ display:"flex", alignItems:"center", gap:5 }}>
+                      <div style={{ width:24, height:3, background:e.color, borderRadius:2 }} />
+                      <span style={{ fontSize:11, color:C.muted, textTransform:"capitalize" }}>{e.dataKey}</span>
+                    </div>
+                  ))}
+                </div>
+              )} />
               <Line type="monotone" dataKey="twitch"    stroke="#9146FF" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="youtube"   stroke="#FF0000" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="tiktok"    stroke="#69c9d0" strokeWidth={2} dot={false} />
@@ -212,15 +204,22 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
         </Card>
       </div>
 
-      {approvals.filter(a=>a.priority==="urgent").length > 0 && (
-        <div onClick={() => navigateTo("approvals")} style={{ marginTop:16, background:C.red+"11", border:"1px solid "+C.red+"33", borderRadius:12, padding:14, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div>
-            <div style={{ fontWeight:700, color:C.red, marginBottom:2 }}>{"🔴 "+approvals.filter(a=>a.priority==="urgent").length+" Urgent Approvals Pending"}</div>
-            <div style={{ fontSize:12, color:C.muted }}>{approvals.filter(a=>a.priority==="urgent").map(a=>a.title).join(" · ")}</div>
+      {/* 4 — OPERATIONS */}
+      <Sect>Operations</Sect>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
+        {statCards.map((s, i) => (
+          <div key={s.nav} style={{ background:s.bg, border:"1px solid "+s.border, borderRadius:14, padding:18 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+              <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
+              <div style={{ fontSize:12, fontWeight:700, color:s.accent }}>{s.label}</div>
+            </div>
+            <div style={{ borderTop:"1px solid "+s.accent+"18", marginBottom:10 }} />
+            <div style={{ fontSize:32, fontWeight:900, color:s.accent, marginBottom:10 }}>{statVals[i]}</div>
+            <button onClick={() => navigateTo(s.nav)} style={{ width:"100%", background:s.accent+"15", border:"1px solid "+s.accent+"33", borderRadius:7, padding:"6px 0", color:s.accent, fontSize:11, fontWeight:700, cursor:"pointer" }}>{s.btn} →</button>
           </div>
-          <span style={{ color:C.red }}>→</span>
-        </div>
-      )}
+        ))}
+      </div>
+
     </div>
   );
 }
