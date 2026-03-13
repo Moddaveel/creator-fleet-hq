@@ -42,7 +42,7 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
         <Card>
           <Sect>Follower Growth — 4 Weeks</Sect>
           <ResponsiveContainer width="100%" height={140}>
-            <LineChart data={growthData}><CartesianGrid strokeDasharray="3 3" stroke={C.border} /><XAxis dataKey="week" stroke={C.muted} fontSize={11} /><YAxis stroke={C.muted} fontSize={11} /><Tooltip contentStyle={{background:C.card,border:"1px solid "+C.border,borderRadius:8,fontSize:12}} /><Line type="monotone" dataKey="twitch" stroke={C.purple} strokeWidth={2} dot={false} /><Line type="monotone" dataKey="youtube" stroke="#ff4444" strokeWidth={2} dot={false} /><Line type="monotone" dataKey="tiktok" stroke="#aaa" strokeWidth={2} dot={false} /></LineChart>
+            <LineChart data={growthData} margin={{top:8,right:8,left:-10,bottom:0}}><CartesianGrid strokeDasharray="3 3" stroke={C.border} /><XAxis dataKey="week" stroke={C.muted} fontSize={11} tick={{fill:C.muted,fontSize:11}} /><YAxis stroke={C.muted} fontSize={10} tick={{fill:C.muted,fontSize:10}} width={40} /><Tooltip contentStyle={{background:C.card,border:"1px solid rgba(255,255,255,0.13)",borderRadius:8,fontSize:12}} labelStyle={{color:C.text}} /><Legend wrapperStyle={{fontSize:12,paddingTop:8}} formatter={(v)=>v.charAt(0).toUpperCase()+v.slice(1)} /><Line type="monotone" dataKey="twitch" stroke={C.purple} strokeWidth={2} dot={false} /><Line type="monotone" dataKey="youtube" stroke="#ff4444" strokeWidth={2} dot={false} /><Line type="monotone" dataKey="tiktok" stroke="#69c9d0" strokeWidth={2} dot={false} /></LineChart>
           </ResponsiveContainer>
         </Card>
         <Card>
