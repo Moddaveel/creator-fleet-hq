@@ -82,8 +82,13 @@ const statusStyles = {
 export default function PublishingPage({ publishQueue, setPublishQueue, toast }) {
   const [subpage, setSubpage] = useState("queue");
   const [chatAgent, setChatAgent] = useState(null);
-  const [selectedPubId, setSelectedPubId] = useState(null);
+  const [expandedIds, setExpandedIds] = useState(new Set());
   const [filter, setFilter] = useState("all");
+  const toggleExpand = id => setExpandedIds(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   const SUBPAGES = [
     {id:"queue",    label:"Queue",    icon:"📤"},
@@ -144,7 +149,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               {STAT_FILTERS.map(s => {
                 const active = filter === s.key;
                 return (
-                  <div key={s.key} onClick={() => setFilter(active ? "all" : s.key)}
+                  <div key={s.key} onClick={() => setFilter(s.key)}
                     style={{ background:s.bg, border:"1px solid "+(active ? s.accent : s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform: active ? "translateY(-1px)" : "none", boxShadow: active ? "0 4px 20px "+s.accent+"22" : "none" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
                       <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
@@ -181,7 +186,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               </div>
             ) : (
               filteredQueue.map(item => {
-                const isSelected = selectedPubId === item.pub_id;
+                const isSelected = expandedIds.has(item.pub_id);
                 const publishedN = item.platforms.filter(p=>p.status==="published").length;
                 const progress = Math.round((publishedN / item.platforms.length) * 100);
                 return (
@@ -189,7 +194,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                     style={{ background:C.card, border:"1px solid "+(isSelected?C.blue+"66":C.border), borderRadius:14, marginBottom:14, overflow:"hidden" }}>
 
                     {/* Card header */}
-                    <div onClick={() => setSelectedPubId(isSelected ? null : item.pub_id)}
+                    <div onClick={() => toggleExpand(item.pub_id)}
                       style={{ padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", background: isSelected ? C.blue+"08" : "transparent" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:14 }}>
                         <div style={{ width:42, height:42, background:C.purple+"20", border:"1px solid "+C.purple+"44", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
@@ -287,7 +292,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 ))}
                 <div style={{ marginLeft:"auto", fontSize:11, color:C.blue, fontWeight:700 }}>{scheduledCount} posts scheduled this week</div>
               </div>
-              <CalendarView queue={publishQueue} onSelectItem={id => setSelectedPubId(id===selectedPubId?null:id)} />
+              <CalendarView queue={publishQueue} onSelectItem={id => toggleExpand(id)} />
             </Card>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
               {Object.entries(PLATFORM_META).map(([k,v]) => (
