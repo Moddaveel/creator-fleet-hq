@@ -18,10 +18,10 @@ const clipPerfData = [
 ];
 
 const platforms = [
-  { name:"Twitch",    icon:"🟣", bg:"#9146FF", text:"#FFFFFF", trend:"+8.2%",  stats:[["Followers","8,420"],["Avg Viewers","312"],["Clip Views","24.3K"]] },
-  { name:"YouTube",  icon:"🔴", bg:"#FF0000", text:"#FFFFFF", trend:"+12.4%", stats:[["Subscribers","5,100"],["Watch Time","1.2K hrs"],["CTR","6.8%"]] },
-  { name:"TikTok",   icon:"⚫", bg:"#010101", text:"#FFFFFF", trend:"+31.0%", stats:[["Followers","22,800"],["Avg Views","4,100"],["Shares","890"]] },
-  { name:"Instagram",icon:"🟠", bg:"#E1306C", text:"#FFFFFF", trend:"+5.1%",  stats:[["Followers","3,200"],["Reach Rate","11.2%"],["Saves","340"]] },
+  { name:"Twitch",    icon:"🟣", accent:"#9146FF", bg:"#18061a", border:"rgba(145,70,255,0.45)", trend:"+8.2%",  stats:[["Followers","8,420"],["Avg Viewers","312"],["Clip Views","24.3K"]] },
+  { name:"YouTube",  icon:"🔴", accent:"#FF0000", bg:"#1a0a0a", border:"rgba(255,0,0,0.45)",     trend:"+12.4%", stats:[["Subscribers","5,100"],["Watch Time","1.2K hrs"],["CTR","6.8%"]] },
+  { name:"TikTok",   icon:"⚫", accent:"#69c9d0", bg:"#08161a", border:"rgba(105,201,208,0.45)", trend:"+31.0%", stats:[["Followers","22,800"],["Avg Views","4,100"],["Shares","890"]] },
+  { name:"Instagram",icon:"🟠", accent:"#E1306C", bg:"#1a080e", border:"rgba(225,48,108,0.45)", trend:"+5.1%",  stats:[["Followers","3,200"],["Reach Rate","11.2%"],["Saves","340"]] },
 ];
 
 export default function Overview({ approvals, clips, publishQueue, navigateTo }) {
@@ -31,15 +31,21 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
       <Sect>Platform KPIs — This Week</Sect>
       <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
         {platforms.map(p => (
-          <div key={p.name} style={{ background:p.bg, border:"none", borderRadius:12, padding:18, flex:1, minWidth:150 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:10 }}>
-              <span style={{ fontSize:13, fontWeight:700, color:p.text }}>{p.icon+" "+p.name}</span>
-              <Chip label={p.trend} color="#ffffff" />
+          <div key={p.name} style={{ background:p.bg, border:"1px solid "+p.border, borderRadius:14, padding:18, flex:1, minWidth:150 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+              <div style={{ width:34, height:34, background:p.accent+"20", border:"1px solid "+p.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>
+                {p.icon}
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:13, fontWeight:800, color:p.accent }}>{p.name}</div>
+              </div>
+              <Chip label={p.trend} color={C.green} />
             </div>
+            <div style={{ borderTop:"1px solid "+p.accent+"18", marginBottom:10 }} />
             {p.stats.map(([k,v]) => (
               <div key={k} style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                <span style={{ fontSize:11, color:"rgba(255,255,255,0.7)" }}>{k}</span>
-                <span style={{ fontSize:12, fontWeight:600, color:p.text }}>{v}</span>
+                <span style={{ fontSize:11, color:C.muted }}>{k}</span>
+                <span style={{ fontSize:12, fontWeight:600, color:C.text }}>{v}</span>
               </div>
             ))}
           </div>
