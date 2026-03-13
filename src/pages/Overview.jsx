@@ -189,7 +189,7 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
               <Tooltip contentStyle={{background:C.card,border:"1px solid "+C.border,borderRadius:8,fontSize:12}} formatter={(v,n)=>[v.toLocaleString(), n.charAt(0).toUpperCase()+n.slice(1)]} />
               <Legend content={() => (
                 <div style={{ display:"flex", gap:16, justifyContent:"center", paddingTop:8 }}>
-                  {[{key:"views",color:C.purple},{key:"shares",color:C.neon}].map(e => (
+                  {[{key:"views",color:C.purple},{key:"shares",color:"#f59e0b"}].map(e => (
                     <div key={e.key} style={{ display:"flex", alignItems:"center", gap:6 }}>
                       <div style={{ width:12, height:12, background:e.color, borderRadius:3 }} />
                       <span style={{ fontSize:11, color:C.muted, textTransform:"capitalize" }}>{e.key}</span>
@@ -198,7 +198,7 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
                 </div>
               )} />
               <Bar dataKey="views"  fill={C.purple} radius={[4,4,0,0]} />
-              <Bar dataKey="shares" fill={C.neon}   radius={[4,4,0,0]} />
+              <Bar dataKey="shares" fill="#f59e0b"   radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
