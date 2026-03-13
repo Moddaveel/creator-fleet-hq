@@ -24,7 +24,12 @@ const BRAND_ICONS = {
 export default function MonetizationPage() {
   const [deals, setDeals] = useState(DEAL_PIPELINE);
   const [chatAgent, setChatAgent] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [expanded, setExpanded] = useState(new Set());
+  const toggleExpand = id => setExpanded(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   return (
     <div style={{ padding:24, maxWidth:1000, margin:"0 auto" }}>
@@ -60,10 +65,10 @@ export default function MonetizationPage() {
         {deals.map(deal => {
           const brand = BRAND_ICONS[deal.brand] || { icon:"🏢", accent:C.muted, bg:C.card2, border:C.border };
           const statusColor = dealStatusColor(deal.status);
-          const isOpen = selected?.id === deal.id;
+          const isOpen = expanded.has(deal.id);
 
           return (
-            <div key={deal.id} onClick={() => setSelected(isOpen ? null : deal)}
+            <div key={deal.id} onClick={() => toggleExpand(deal.id)}
               style={{ background:brand.bg, border:"1px solid "+(isOpen ? brand.accent+"88" : brand.border), borderRadius:14, padding:18, cursor:"pointer", transition:"border 0.15s" }}>
 
               {/* Top row */}
@@ -84,10 +89,12 @@ export default function MonetizationPage() {
                 </div>
 
                 {/* Right side stats */}
-                <div style={{ textAlign:"right", flexShrink:0 }}>
-                  <div style={{ fontSize:16, fontWeight:800, color:C.green, marginBottom:4 }}>{deal.revenue}</div>
-                  <div style={{ fontSize:11, color: deal.fitScore>=80?C.green:deal.fitScore>=65?C.yellow:C.red, fontWeight:600 }}>
-                    Fit {deal.fitScore}/100
+                <div style={{ textAlign:"right", flexShrink:0, display:"flex", flexDirection:"column", gap:6, alignItems:"flex-end" }}>
+                  <div style={{ fontSize:16, fontWeight:800, color:C.green }}>{deal.revenue}</div>
+                  <div style={{ fontSize:11, color: deal.fitScore>=80?C.green:deal.fitScore>=65?C.yellow:C.red, fontWeight:600 }}>Fit {deal.fitScore}/100</div>
+                  <div style={{ background: deal.priority==="urgent" ? C.red+"22" : deal.priority==="high" ? C.yellow+"22" : C.card2, border:"1px solid "+(deal.priority==="urgent" ? C.red+"55" : deal.priority==="high" ? C.yellow+"55" : C.border), borderRadius:7, padding:"3px 10px", fontSize:11, fontWeight:700, color: deal.priority==="urgent" ? C.red : deal.priority==="high" ? C.yellow : C.muted, display:"flex", alignItems:"center", gap:5 }}>
+                    <span>{deal.priority==="urgent" ? "⏰" : "📅"}</span>
+                    <span>{deal.deadline}</span>
                   </div>
                 </div>
 
