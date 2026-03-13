@@ -10,74 +10,91 @@ import AgentButton from "../components/AgentButton";
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAY_NAMES   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
+const RALPH_LOOP = {
+  status: "open",
+  lastSignal: "Mar 11, 2026 9:42 PM",
+  signalType: "overperformer",
+  activeSignals: 3,
+  lastContent: "Discovery Clip — Reaction format 2x avg",
+};
+
+function RalphLoopStatus() {
+  const isOpen = RALPH_LOOP.status === "open";
+  const accent = isOpen ? C.neon : C.green;
+  return (
+    <div style={{ marginBottom:20, background: isOpen ? "rgba(217,70,239,0.08)" : "rgba(34,197,94,0.08)", border:"2px solid "+(isOpen?"rgba(217,70,239,0.5)":"rgba(34,197,94,0.5)"), borderRadius:14, padding:18 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:12 }}>
+        <div style={{ width:38, height:38, background:"rgba(217,70,239,0.2)", border:"1px solid rgba(217,70,239,0.44)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>♻️</div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:13, fontWeight:800, color:C.neon }}>Ralph Loop</div>
+          <div style={{ fontSize:11, color:C.muted }}>Performance signal chain — Studio to Publish to Analytics to Studio</div>
+        </div>
+        <div style={{ background:accent+"22", border:"1px solid "+accent+"55", borderRadius:8, padding:"4px 12px", fontSize:11, fontWeight:800, color:accent }}>
+          {isOpen ? "Signal Open" : "Loop Closed"}
+        </div>
+      </div>
+      <div style={{ borderTop:"1px solid rgba(217,70,239,0.15)", paddingTop:12, display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
+        <div style={{ background:"rgba(217,70,239,0.08)", border:"1px solid rgba(217,70,239,0.2)", borderRadius:9, padding:"10px 14px" }}>
+          <div style={{ fontSize:10, color:C.muted, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.08em" }}>Active Signals</div>
+          <div style={{ fontSize:22, fontWeight:900, color:C.neon }}>{RALPH_LOOP.activeSignals}</div>
+        </div>
+        <div style={{ background:"rgba(217,70,239,0.08)", border:"1px solid rgba(217,70,239,0.2)", borderRadius:9, padding:"10px 14px" }}>
+          <div style={{ fontSize:10, color:C.muted, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.08em" }}>Signal Type</div>
+          <div style={{ fontSize:12, fontWeight:700, color:RALPH_LOOP.signalType==="overperformer"?C.green:C.red, marginTop:4 }}>
+            {RALPH_LOOP.signalType==="overperformer" ? "Overperformer" : "Underperformer"}
+          </div>
+        </div>
+        <div style={{ background:"rgba(217,70,239,0.08)", border:"1px solid rgba(217,70,239,0.2)", borderRadius:9, padding:"10px 14px" }}>
+          <div style={{ fontSize:10, color:C.muted, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.08em" }}>Last Signal</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.text, marginTop:4 }}>{RALPH_LOOP.lastSignal}</div>
+        </div>
+      </div>
+      <div style={{ marginTop:10, padding:"8px 12px", background:"rgba(217,70,239,0.06)", border:"1px solid rgba(217,70,239,0.15)", borderRadius:8, fontSize:11, color:C.muted }}>
+        <span style={{ color:C.neon, fontWeight:700 }}>Latest: </span>{RALPH_LOOP.lastContent}
+      </div>
+    </div>
+  );
+}
+
 function MonthCalendar({ queue, year, month }) {
-  const firstDay  = new Date(year, month, 1).getDay();
+  const firstDay   = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const today = new Date();
-
   const getPostsForDay = (day) => {
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dateStr = year+"-"+String(month+1).padStart(2,"0")+"-"+String(day).padStart(2,"0");
     return queue.flatMap(item =>
       item.platforms
         .filter(p => p.scheduledTime && new Date(p.scheduledTime).toISOString().startsWith(dateStr))
         .map(p => ({ ...p, itemTitle: item.title }))
     );
   };
-
-  // Build grid cells: leading empty + day cells
   const cells = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-  // Pad to complete last row
   while (cells.length % 7 !== 0) cells.push(null);
-
   const isToday = (d) => d && today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
-
   return (
     <div>
-      {/* Day headers */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4, marginBottom:4 }}>
         {DAY_NAMES.map(d => (
           <div key={d} style={{ textAlign:"center", fontSize:11, fontWeight:700, color:C.muted, padding:"6px 0", textTransform:"uppercase", letterSpacing:"0.08em" }}>{d}</div>
         ))}
       </div>
-      {/* Day cells */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
         {cells.map((day, i) => {
-          if (!day) return <div key={"empty-"+i} style={{ minHeight:90, borderRadius:10, background:"transparent" }} />;
-          const posts = getPostsForDay(day);
-          const isTod = isToday(day);
+          if (!day) return <div key={"e"+i} style={{ minHeight:90, borderRadius:10 }} />;
+          const posts  = getPostsForDay(day);
+          const isTod  = isToday(day);
           return (
-            <div key={day} style={{
-              minHeight:90, borderRadius:10, padding:8,
-              background: isTod ? C.purple+"18" : C.card,
-              border:"1px solid "+(isTod ? C.purple+"66" : C.border),
-              display:"flex", flexDirection:"column", gap:3,
-            }}>
-              {/* Day number */}
+            <div key={day} style={{ minHeight:90, borderRadius:10, padding:8, background:isTod?C.purple+"18":C.card, border:"1px solid "+(isTod?C.purple+"66":C.border), display:"flex", flexDirection:"column", gap:3 }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                <div style={{
-                  width:22, height:22, borderRadius:11,
-                  background: isTod ? C.purple : "transparent",
-                  display:"flex", alignItems:"center", justifyContent:"center",
-                  fontSize:11, fontWeight: isTod ? 800 : 500,
-                  color: isTod ? "#fff" : C.muted,
-                }}>{day}</div>
-                {posts.length > 2 && (
-                  <div style={{ fontSize:9, color:C.muted, fontWeight:600 }}>+{posts.length-2}</div>
-                )}
+                <div style={{ width:22, height:22, borderRadius:11, background:isTod?C.purple:"transparent", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:isTod?800:500, color:isTod?"#fff":C.muted }}>{day}</div>
+                {posts.length > 2 && <div style={{ fontSize:9, color:C.muted, fontWeight:600 }}>+{posts.length-2}</div>}
               </div>
-              {/* Post pills — show max 2 */}
               {posts.slice(0,2).map((p, pi) => {
-                const meta = PLATFORM_META[p.platform] || { color:C.muted, icon:"📱", label:p.platform };
+                const meta = PLATFORM_META[p.platform] || { color:C.muted, icon:"📱" };
                 return (
-                  <div key={pi} title={p.itemTitle} style={{
-                    background: meta.color+"22", border:"1px solid "+meta.color+"44",
-                    borderRadius:5, padding:"2px 5px",
-                    fontSize:9, fontWeight:700, color:meta.color,
-                    overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
-                    display:"flex", alignItems:"center", gap:3,
-                  }}>
+                  <div key={pi} title={p.itemTitle} style={{ background:meta.color+"22", border:"1px solid "+meta.color+"44", borderRadius:5, padding:"2px 5px", fontSize:9, fontWeight:700, color:meta.color, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", display:"flex", alignItems:"center", gap:3 }}>
                     <span>{meta.icon}</span>
                     <span style={{ overflow:"hidden", textOverflow:"ellipsis" }}>{p.itemTitle.slice(0,14)}</span>
                   </div>
@@ -99,16 +116,16 @@ const STAT_FILTERS = [
 ];
 
 const statusStyles = {
-  published: { color:"#22c55e", bg:"rgba(34,197,94,0.12)",  border:"rgba(34,197,94,0.3)",  label:"✅ Published" },
-  scheduled: { color:"#3b82f6", bg:"rgba(59,130,246,0.12)", border:"rgba(59,130,246,0.3)", label:"📅 Scheduled" },
-  draft:     { color:"#eab308", bg:"rgba(234,179,8,0.12)",  border:"rgba(234,179,8,0.3)",  label:"✏️ Draft"     },
+  published: { color:"#22c55e", bg:"rgba(34,197,94,0.12)",  border:"rgba(34,197,94,0.3)",  label:"Published" },
+  scheduled: { color:"#3b82f6", bg:"rgba(59,130,246,0.12)", border:"rgba(59,130,246,0.3)", label:"Scheduled" },
+  draft:     { color:"#eab308", bg:"rgba(234,179,8,0.12)",  border:"rgba(234,179,8,0.3)",  label:"Draft"     },
 };
 
 export default function PublishingPage({ publishQueue, setPublishQueue, toast }) {
-  const [subpage, setSubpage]       = useState("queue");
-  const [chatAgent, setChatAgent]   = useState(null);
+  const [subpage, setSubpage]         = useState("queue");
+  const [chatAgent, setChatAgent]     = useState(null);
   const [expandedIds, setExpandedIds] = useState(new Set());
-  const [filter, setFilter]         = useState("all");
+  const [filter, setFilter]           = useState("all");
   const today = new Date();
   const [calYear,  setCalYear]  = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
@@ -130,7 +147,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
       if (item.pub_id !== pubId) return item;
       return { ...item, platforms: item.platforms.map((p,i) => i===platIdx ? {...p,status:"published"} : p) };
     }));
-    toast("✅ Marked published — Ralph Loop tracking", C.green);
+    toast("Marked published — Ralph Loop tracking", C.green);
   };
 
   const scheduledCount = publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="scheduled").length,0);
@@ -149,6 +166,9 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
   const prevMonth = () => { if (calMonth===0){setCalMonth(11);setCalYear(y=>y-1);}else setCalMonth(m=>m-1); };
   const nextMonth = () => { if (calMonth===11){setCalMonth(0);setCalYear(y=>y+1);}else setCalMonth(m=>m+1); };
 
+  const pubDept = PUB_AGENTS.find(a => a.id === "director");
+  const specialists = PUB_AGENTS.filter(a => a.id !== "director");
+
   return (
     <div style={{ height:"calc(100vh - 112px)", display:"flex", flexDirection:"column" }}>
 
@@ -156,7 +176,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
       <div style={{ background:"#1a1025", borderBottom:"1px solid "+C.border, padding:"0 24px", display:"flex", gap:2, alignItems:"center", flexShrink:0 }}>
         {SUBPAGES.map(sp => (
           <button key={sp.id} onClick={() => setSubpage(sp.id)}
-            style={{ background: subpage===sp.id ? C.blue+"22" : "transparent", border:"none", borderBottom:"2px solid "+(subpage===sp.id?C.blue:"transparent"), color:subpage===sp.id?C.blue:C.muted, padding:"11px 16px", fontSize:12, fontWeight:subpage===sp.id?700:400, cursor:"pointer", display:"flex", gap:6, alignItems:"center", transition:"all 0.15s" }}>
+            style={{ background:subpage===sp.id?C.blue+"22":"transparent", border:"none", borderBottom:"2px solid "+(subpage===sp.id?C.blue:"transparent"), color:subpage===sp.id?C.blue:C.muted, padding:"11px 16px", fontSize:12, fontWeight:subpage===sp.id?700:400, cursor:"pointer", display:"flex", gap:6, alignItems:"center", transition:"all 0.15s" }}>
             <span>{sp.icon}</span><span>{sp.label}</span>
             {sp.id==="queue"&&draftCount>0&&<span style={{ background:C.yellow, color:"#000", borderRadius:10, padding:"1px 6px", fontSize:10, fontWeight:800 }}>{draftCount}</span>}
           </button>
@@ -168,7 +188,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
 
       <div style={{ flex:1, overflowY:"auto" }}>
 
-        {/* ── QUEUE ── */}
+        {/* QUEUE */}
         {subpage==="queue" && (
           <div style={{ padding:24 }}>
             <div style={{ marginBottom:20 }}>
@@ -180,7 +200,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 const active = filter === s.key;
                 return (
                   <div key={s.key} onClick={() => setFilter(s.key)}
-                    style={{ background:s.bg, border:"1px solid "+(active ? s.accent : s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform:active?"translateY(-1px)":"none", boxShadow:active?"0 4px 20px "+s.accent+"22":"none" }}>
+                    style={{ background:s.bg, border:"1px solid "+(active?s.accent:s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform:active?"translateY(-1px)":"none", boxShadow:active?"0 4px 20px "+s.accent+"22":"none" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
                       <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
                       <div style={{ fontSize:11, fontWeight:700, color:active?s.accent:C.muted }}>{s.label}</div>
@@ -197,20 +217,20 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <span style={{ fontSize:12, color:C.muted }}>Showing:</span>
                 <Chip label={STAT_FILTERS.find(s=>s.key===filter)?.label} color={STAT_FILTERS.find(s=>s.key===filter)?.accent} />
                 <span style={{ fontSize:11, color:C.muted }}>· {filteredQueue.reduce((a,i)=>a+i.platforms.length,0)} posts</span>
-                <button onClick={() => setFilter("all")} style={{ marginLeft:"auto", background:"transparent", border:"1px solid "+C.border, borderRadius:6, padding:"2px 10px", color:C.muted, fontSize:11, cursor:"pointer" }}>✕ Clear</button>
+                <button onClick={() => setFilter("all")} style={{ marginLeft:"auto", background:"transparent", border:"1px solid "+C.border, borderRadius:6, padding:"2px 10px", color:C.muted, fontSize:11, cursor:"pointer" }}>Clear</button>
               </div>
             )}
             {filteredQueue.length === 0 ? (
               <div style={{ textAlign:"center", padding:"80px 0" }}>
                 <div style={{ fontSize:48, marginBottom:16 }}>📤</div>
                 <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>{filter==="all"?"Queue is empty":"No "+filter+" posts"}</div>
-                <div style={{ fontSize:13, color:C.muted }}>{filter==="all"?'Use "Approve + Schedule" in the Approval Queue to add content here':""}</div>
+                <div style={{ fontSize:13, color:C.muted }}>{filter==="all"?"Use Approve + Schedule in the Approval Queue to add content here":""}</div>
               </div>
             ) : (
               filteredQueue.map(item => {
                 const isSelected = expandedIds.has(item.pub_id);
                 const publishedN = item.platforms.filter(p=>p.status==="published").length;
-                const progress = Math.round((publishedN/item.platforms.length)*100);
+                const progress   = Math.round((publishedN/item.platforms.length)*100);
                 return (
                   <div key={item.pub_id} style={{ background:C.card, border:"1px solid "+(isSelected?C.blue+"66":C.border), borderRadius:14, marginBottom:14, overflow:"hidden" }}>
                     <div onClick={() => toggleExpand(item.pub_id)}
@@ -247,7 +267,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                       <div style={{ borderTop:"1px solid "+C.border, padding:"14px 20px", display:"flex", flexDirection:"column", gap:8 }}>
                         {item.platforms.map((p,pi) => {
                           const meta = PLATFORM_META[p.platform]||{icon:"📱",label:p.platform,color:C.muted};
-                          const ss = statusStyles[p.status]||statusStyles.draft;
+                          const ss   = statusStyles[p.status]||statusStyles.draft;
                           return (
                             <div key={pi} style={{ display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:meta.color+"0d",border:"1px solid "+meta.color+"33",borderRadius:10 }}>
                               <div style={{ width:36,height:36,background:meta.color+"20",border:"1px solid "+meta.color+"44",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0 }}>{meta.icon}</div>
@@ -259,9 +279,11 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                                 {p.scheduledTime?<div style={{ fontSize:11,color:C.blue,fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>:<span style={{ fontSize:10,color:C.muted }}>Not scheduled</span>}
                               </div>
                               <div style={{ flexShrink:0 }}>
-                                {p.status==="published"?<div style={{ background:ss.bg,border:"1px solid "+ss.border,borderRadius:7,padding:"4px 10px",fontSize:11,fontWeight:700,color:ss.color }}>{ss.label}</div>
-                                :p.status==="scheduled"?<button onClick={()=>markPublished(item.pub_id,pi)} style={{ background:C.green+"22",border:"1px solid "+C.green+"44",borderRadius:7,padding:"6px 12px",color:C.green,fontSize:11,fontWeight:700,cursor:"pointer" }}>Mark Published</button>
-                                :<div style={{ background:ss.bg,border:"1px solid "+ss.border,borderRadius:7,padding:"4px 10px",fontSize:11,fontWeight:700,color:ss.color }}>{ss.label}</div>}
+                                {p.status==="published"
+                                  ? <div style={{ background:ss.bg,border:"1px solid "+ss.border,borderRadius:7,padding:"4px 10px",fontSize:11,fontWeight:700,color:ss.color }}>{ss.label}</div>
+                                  : p.status==="scheduled"
+                                    ? <button onClick={()=>markPublished(item.pub_id,pi)} style={{ background:C.green+"22",border:"1px solid "+C.green+"44",borderRadius:7,padding:"6px 12px",color:C.green,fontSize:11,fontWeight:700,cursor:"pointer" }}>Mark Published</button>
+                                    : <div style={{ background:ss.bg,border:"1px solid "+ss.border,borderRadius:7,padding:"4px 10px",fontSize:11,fontWeight:700,color:ss.color }}>{ss.label}</div>}
                               </div>
                             </div>
                           );
@@ -275,26 +297,21 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
           </div>
         )}
 
-        {/* ── CALENDAR ── */}
+        {/* CALENDAR */}
         {subpage==="calendar" && (
           <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
-
-            {/* Calendar header */}
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
-              <div>
-                <div style={{ fontSize:17, fontWeight:800 }}>Publishing Calendar</div>
-                <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{scheduledCount} posts scheduled</div>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                <div style={{ background:C.blue+"22", border:"1px solid "+C.blue+"44", borderRadius:10, padding:"6px 14px", fontSize:15, fontWeight:800, color:C.blue }}>Publishing Calendar</div>
+                <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, padding:"4px 12px", fontSize:12, color:C.muted }}>{scheduledCount} posts scheduled</div>
               </div>
-              {/* Month nav pill */}
               <div style={{ display:"flex", alignItems:"center", gap:8, background:C.card, border:"1px solid "+C.border, borderRadius:12, padding:"6px 10px" }}>
-                <button onClick={prevMonth} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:7, width:30, height:30, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>‹</button>
+                <button onClick={prevMonth} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:7, width:30, height:30, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>&#8249;</button>
                 <div style={{ fontSize:13, fontWeight:800, minWidth:150, textAlign:"center", color:C.text }}>{MONTH_NAMES[calMonth]} {calYear}</div>
-                <button onClick={nextMonth} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:7, width:30, height:30, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>›</button>
+                <button onClick={nextMonth} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:7, width:30, height:30, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>&#8250;</button>
               </div>
             </div>
-
-            {/* Platform legend — top */}
-            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, padding:"12px 16px", background:C.card, border:"1px solid "+C.border, borderRadius:12 }}>
+            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16, padding:"12px 16px", background:C.card, border:"1px solid "+C.border, borderRadius:12 }}>
               <span style={{ fontSize:11, color:C.muted, fontWeight:700, marginRight:4, alignSelf:"center" }}>PLATFORMS</span>
               {Object.entries(PLATFORM_META).map(([k,v]) => (
                 <div key={k} style={{ display:"flex", alignItems:"center", gap:6, background:v.color+"15", border:"1px solid "+v.color+"33", borderRadius:7, padding:"4px 10px" }}>
@@ -302,52 +319,65 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                   <span style={{ fontSize:11, fontWeight:700, color:v.color }}>{v.label}</span>
                 </div>
               ))}
-              <div style={{ marginLeft:"auto", display:"flex", gap:10, alignItems:"center" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                  <div style={{ width:12, height:12, borderRadius:6, background:C.purple }} />
-                  <span style={{ fontSize:11, color:C.muted }}>Today</span>
-                </div>
+              <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:5 }}>
+                <div style={{ width:12, height:12, borderRadius:6, background:C.purple }} />
+                <span style={{ fontSize:11, color:C.muted }}>Today</span>
               </div>
             </div>
-
-            {/* Month grid */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
+              {Object.entries(PLATFORM_META).map(([k,v]) => (
+                <div key={k} style={{ background:v.color+"0d", border:"1px solid "+v.color+"33", borderRadius:14, padding:16 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+                    <div style={{ width:30, height:30, background:v.color+"20", border:"1px solid "+v.color+"44", borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>{v.icon}</div>
+                    <div style={{ fontSize:12, fontWeight:700, color:v.color }}>{v.label}</div>
+                  </div>
+                  <div style={{ borderTop:"1px solid "+v.color+"18", marginBottom:10 }} />
+                  <div style={{ fontSize:10, color:C.muted, marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Best Times</div>
+                  {v.bestTimes.map((t,i) => (
+                    <div key={i} style={{ fontSize:12, color:C.text, marginBottom:4, display:"flex", alignItems:"center", gap:6 }}>
+                      <div style={{ width:4, height:4, borderRadius:2, background:v.color }} />{t}
+                    </div>
+                  ))}
+                  <div style={{ marginTop:10, fontSize:10, color:C.muted, lineHeight:1.5 }}>{v.notes}</div>
+                </div>
+              ))}
+            </div>
             <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:14, padding:20 }}>
               <MonthCalendar queue={publishQueue} year={calYear} month={calMonth} />
-            </div>
-
-            {/* Best Posting Times — between legend and calendar */}
-            <div style={{ marginBottom:16 }}>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
-                {Object.entries(PLATFORM_META).map(([k,v]) => (
-                  <div key={k} style={{ background:v.color+"0d", border:"1px solid "+v.color+"33", borderRadius:14, padding:16 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                      <div style={{ width:30, height:30, background:v.color+"20", border:"1px solid "+v.color+"44", borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>{v.icon}</div>
-                      <div style={{ fontSize:12, fontWeight:700, color:v.color }}>{v.label}</div>
-                    </div>
-                    <div style={{ borderTop:"1px solid "+v.color+"18", marginBottom:10 }} />
-                    <div style={{ fontSize:10, color:C.muted, marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Best Times</div>
-                    {v.bestTimes.map((t,i) => (
-                      <div key={i} style={{ fontSize:12, color:C.text, marginBottom:4, display:"flex", alignItems:"center", gap:6 }}>
-                        <div style={{ width:4, height:4, borderRadius:2, background:v.color }} />{t}
-                      </div>
-                    ))}
-                    <div style={{ marginTop:10, fontSize:10, color:C.muted, lineHeight:1.5 }}>{v.notes}</div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         )}
 
-        {/* ── AGENTS ── */}
+        {/* AGENTS */}
         {subpage==="agents" && (
           <div style={{ padding:24 }}>
             <div style={{ marginBottom:20 }}>
               <div style={{ fontSize:17, fontWeight:800, marginBottom:4 }}>Publishing Agents</div>
               <div style={{ fontSize:13, color:C.muted }}>The last mile — scheduling to analytics.</div>
             </div>
+
+            <RalphLoopStatus />
+
+            {pubDept && (
+              <div onClick={() => setChatAgent(pubDept)}
+                style={{ background:"linear-gradient(135deg,rgba(59,130,246,0.12),rgba(59,130,246,0.06))", border:"2px solid rgba(59,130,246,0.5)", borderRadius:16, padding:22, cursor:"pointer", marginBottom:20, display:"flex", alignItems:"center", gap:18 }}>
+                <div style={{ width:64, height:64, background:"rgba(59,130,246,0.2)", border:"2px solid rgba(59,130,246,0.55)", borderRadius:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, flexShrink:0 }}>
+                  {pubDept.icon}
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                    <div style={{ fontSize:15, fontWeight:900, color:pubDept.color }}>{pubDept.name}</div>
+                    <div style={{ background:"rgba(59,130,246,0.2)", border:"1px solid rgba(59,130,246,0.4)", borderRadius:6, padding:"2px 8px", fontSize:10, fontWeight:800, color:pubDept.color }}>DEPT HEAD</div>
+                  </div>
+                  <div style={{ fontSize:12, color:C.muted, lineHeight:1.6 }}>{pubDept.role} — Owns the full publishing chain, coordinates all specialist agents, and closes the Ralph Loop back to Content Studio.</div>
+                </div>
+                <button style={{ background:"rgba(59,130,246,0.15)", border:"1px solid rgba(59,130,246,0.33)", borderRadius:9, padding:"10px 18px", color:pubDept.color, fontSize:12, fontWeight:700, cursor:"pointer", flexShrink:0 }}>Open Session →</button>
+              </div>
+            )}
+
+            <div style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12 }}>Specialist Agents</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12, marginBottom:20 }}>
-              {PUB_AGENTS.map(a => (
+              {specialists.map(a => (
                 <div key={a.id} onClick={() => setChatAgent(a)}
                   style={{ background:a.color+"0d", border:"1px solid "+a.color+"33", borderRadius:14, padding:20, cursor:"pointer" }}>
                   <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
@@ -362,13 +392,14 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 </div>
               ))}
             </div>
+
             <Card>
               <Sect>Publishing SLA — Targets</Sect>
               {[
-                {metric:"Approval to Queue",   target:"<5 min",  note:"Approve + Schedule is instant",        color:C.green},
-                {metric:"Queue to Scheduled",  target:"<30 min", note:"Scheduling Agent recommends time",     color:C.green},
-                {metric:"Approval to Publish", target:"<2 hrs",  note:"Currently 4.2 hrs — gap to close",    color:C.yellow},
-                {metric:"Stream to Published", target:"<48 hrs", note:"Currently 3.2 days — primary target", color:C.red},
+                {metric:"Approval to Queue",   target:"less than 5 min",  note:"Approve + Schedule is instant",        color:C.green},
+                {metric:"Queue to Scheduled",  target:"less than 30 min", note:"Scheduling Agent recommends time",     color:C.green},
+                {metric:"Approval to Publish", target:"less than 2 hrs",  note:"Currently 4.2 hrs — gap to close",    color:C.yellow},
+                {metric:"Stream to Published", target:"less than 48 hrs", note:"Currently 3.2 days — primary target", color:C.red},
               ].map((s,i) => (
                 <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 0", borderBottom:i<3?"1px solid "+C.border:"none" }}>
                   <div>
