@@ -50,7 +50,7 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
   const [chatAgent, setChatAgent]     = useState(null);
   const [alertsOpen, setAlertsOpen]   = useState(true);
   const [rosterOpen, setRosterOpen]   = useState(false);
-  const [expandedDept, setExpandedDept] = useState(null);
+  const [expandedDepts, setExpandedDepts] = useState(new Set());
   const urgentN = approvals.filter(a => a.priority === "urgent").length;
 
   const statCards = [
@@ -146,11 +146,11 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
 
           {/* Department rows */}
           {ALL_DEPARTMENTS.map(dept => {
-            const isOpen = expandedDept === dept.id;
+            const isOpen = expandedDepts.has(dept.id);
             return (
               <div key={dept.id} style={{ borderBottom:"1px solid "+C.border }}>
                 {/* Dept header */}
-                <div onClick={() => setExpandedDept(isOpen ? null : dept.id)}
+                <div onClick={() => setExpandedDepts(prev => { const next = new Set(prev); next.has(dept.id) ? next.delete(dept.id) : next.add(dept.id); return next; })}
                   style={{ padding:"12px 20px", display:"flex", alignItems:"center", gap:12, cursor:"pointer", background:isOpen?dept.color+"08":"transparent" }}>
                   <div style={{ width:36, height:36, background:dept.color+"20", border:"1px solid "+dept.color+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
                     {dept.icon}
