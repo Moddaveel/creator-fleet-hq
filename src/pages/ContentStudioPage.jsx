@@ -6,10 +6,10 @@ import AgentButton from "../components/AgentButton";
 import AgentChat from "../components/AgentChat";
 
 const PLATFORMS = [
-  { id:"youtube",         label:"YouTube",          icon:"▶",  accent:"#ff4444", bg:"#1a0a0a", border:"#ff444430", keys:["youtube"],         description:"Long-form VODs & full stream uploads" },
-  { id:"youtube_shorts",  label:"YouTube Shorts",   icon:"▶",  accent:"#ff6b6b", bg:"#1a0c0c", border:"#ff6b6b30", keys:["youtube_shorts"],  description:"Vertical short clips · under 60s" },
-  { id:"tiktok",          label:"TikTok",           icon:"♪",  accent:"#69c9d0", bg:"#08161a", border:"#69c9d030", keys:["tiktok"],          description:"Short clips · hook in 2s · max 60s" },
-  { id:"instagram_reels", label:"Instagram Reels",  icon:"◈",  accent:"#f97316", bg:"#1a0e08", border:"#f9731630", keys:["instagram_reels"], description:"Reels · first line is the hook · 6–10 hashtags" },
+  { id:"youtube",         label:"YouTube",          icon:"▶",  accent:"#ff4444", bg:"#1a0a0a", border:"rgba(255,68,68,0.45)", keys:["youtube"],         description:"Long-form VODs & full stream uploads" },
+  { id:"youtube_shorts",  label:"YouTube Shorts",   icon:"▶",  accent:"#ff6b6b", bg:"#1a0c0c", border:"rgba(255,107,107,0.45)", keys:["youtube_shorts"],  description:"Vertical short clips · under 60s" },
+  { id:"tiktok",          label:"TikTok",           icon:"♪",  accent:"#69c9d0", bg:"#08161a", border:"rgba(105,201,208,0.45)", keys:["tiktok"],          description:"Short clips · hook in 2s · max 60s" },
+  { id:"instagram_reels", label:"Instagram Reels",  icon:"◈",  accent:"#f97316", bg:"#1a0e08", border:"rgba(249,115,22,0.45)", keys:["instagram_reels"], description:"Reels · first line is the hook · 6–10 hashtags" },
 ];
 
 const STATUSES = [
