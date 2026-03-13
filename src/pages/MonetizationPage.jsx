@@ -4,49 +4,140 @@ import { MONO_AGENTS } from "../data/agents";
 import { DEAL_PIPELINE } from "../data/deals";
 import Chip from "../components/Chip";
 import Card from "../components/Card";
+import Sect from "../components/Sect";
 import AgentChat from "../components/AgentChat";
 import AgentButton from "../components/AgentButton";
+
+const STAT_CARDS = [
+  { label:"Est. MRR",       val:"$3,200",  icon:"💰", accent:"#22c55e", bg:"#08160e", border:"rgba(34,197,94,0.45)"  },
+  { label:"Pipeline Value", val:"$12,800", icon:"📈", accent:"#eab308", bg:"#16120a", border:"rgba(234,179,8,0.45)"  },
+  { label:"Avg Fit Score",  val:"82/100",  icon:"🎯", accent:"#3b82f6", bg:"#080e1a", border:"rgba(59,130,246,0.45)" },
+];
+
+const BRAND_ICONS = {
+  SteelSeries:  { icon:"🎧", accent:"#ef4444", bg:"#1a0808", border:"rgba(239,68,68,0.45)"   },
+  Notion:       { icon:"📝", accent:"#e2e8f0", bg:"#111118", border:"rgba(226,232,240,0.25)"  },
+  Elgato:       { icon:"⚡", accent:"#a855f7", bg:"#18061a", border:"rgba(168,85,247,0.45)"   },
+  "Brilliant.org":{ icon:"🧠", accent:"#14b8a6", bg:"#061614", border:"rgba(20,184,166,0.45)" },
+};
 
 export default function MonetizationPage() {
   const [deals, setDeals] = useState(DEAL_PIPELINE);
   const [chatAgent, setChatAgent] = useState(null);
   const [selected, setSelected] = useState(null);
+
   return (
     <div style={{ padding:24, maxWidth:1000, margin:"0 auto" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20 }}>
-        <div style={{ fontSize:17, fontWeight:800 }}>Monetization & Partnership</div>
-        <div style={{ display:"flex", gap:6 }}>{MONO_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}</div>
+
+      {/* Header */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+        <div>
+          <div style={{ fontSize:17, fontWeight:800 }}>Monetization & Partnerships</div>
+          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{deals.length} active deals · Click a deal to expand</div>
+        </div>
+        <div style={{ display:"flex", gap:6 }}>
+          {MONO_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
+        </div>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:20 }}>
-        {[{label:"Est. MRR",val:"$3,200",color:C.green},{label:"Pipeline Value",val:"$12,800",color:C.yellow},{label:"Avg Fit Score",val:"82/100",color:C.blue}].map((s,i) => (
-          <Card key={i}><div style={{ fontSize:11, color:C.muted, marginBottom:4 }}>{s.label}</div><div style={{ fontSize:22, fontWeight:800, color:s.color }}>{s.val}</div></Card>
+
+      {/* Stat cards */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24 }}>
+        {STAT_CARDS.map(s => (
+          <div key={s.label} style={{ background:s.bg, border:"1px solid "+s.border, borderRadius:14, padding:18 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+              <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
+              <div style={{ fontSize:12, fontWeight:700, color:s.accent }}>{s.label}</div>
+            </div>
+            <div style={{ borderTop:"1px solid "+s.accent+"18", marginBottom:10 }} />
+            <div style={{ fontSize:28, fontWeight:900, color:s.accent }}>{s.val}</div>
+          </div>
         ))}
       </div>
-      {deals.map(deal => (
-        <div key={deal.id} onClick={() => setSelected(selected?.id===deal.id?null:deal)} style={{ background:C.card2, border:"1px solid "+(selected?.id===deal.id?C.green+"66":C.border), borderRadius:12, padding:16, marginBottom:10, cursor:"pointer" }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div>
-              <div style={{ display:"flex", gap:8, marginBottom:4 }}>
-                <div style={{ fontSize:14, fontWeight:800 }}>{deal.brand}</div>
-                <Chip label={dealStatusLabel(deal.status)} color={dealStatusColor(deal.status)} sm />
-                {deal.priority==="urgent" && <Chip label="🔴 URGENT" color={C.red} sm />}
+
+      {/* Deal pipeline */}
+      <Sect>Deal Pipeline</Sect>
+      <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:12 }}>
+        {deals.map(deal => {
+          const brand = BRAND_ICONS[deal.brand] || { icon:"🏢", accent:C.muted, bg:C.card2, border:C.border };
+          const statusColor = dealStatusColor(deal.status);
+          const isOpen = selected?.id === deal.id;
+
+          return (
+            <div key={deal.id} onClick={() => setSelected(isOpen ? null : deal)}
+              style={{ background:brand.bg, border:"1px solid "+(isOpen ? brand.accent+"88" : brand.border), borderRadius:14, padding:18, cursor:"pointer", transition:"border 0.15s" }}>
+
+              {/* Top row */}
+              <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                {/* Brand icon */}
+                <div style={{ width:44, height:44, background:brand.accent+"20", border:"1px solid "+brand.accent+"44", borderRadius:11, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
+                  {brand.icon}
+                </div>
+
+                {/* Brand info */}
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                    <div style={{ fontSize:15, fontWeight:800, color:brand.accent }}>{deal.brand}</div>
+                    <Chip label={dealStatusLabel(deal.status)} color={statusColor} sm />
+                    {deal.priority === "urgent" && <Chip label="🔴 URGENT" color={C.red} sm />}
+                  </div>
+                  <div style={{ fontSize:12, color:C.muted }}>{deal.category} · {deal.notes}</div>
+                </div>
+
+                {/* Right side stats */}
+                <div style={{ textAlign:"right", flexShrink:0 }}>
+                  <div style={{ fontSize:16, fontWeight:800, color:C.green, marginBottom:4 }}>{deal.revenue}</div>
+                  <div style={{ fontSize:11, color: deal.fitScore>=80?C.green:deal.fitScore>=65?C.yellow:C.red, fontWeight:600 }}>
+                    Fit {deal.fitScore}/100
+                  </div>
+                </div>
+
+                <div style={{ fontSize:12, color:C.muted, marginLeft:8 }}>{isOpen ? "▲" : "▼"}</div>
               </div>
-              <div style={{ fontSize:12, color:C.muted }}>{deal.notes}</div>
+
+              {/* Expanded section */}
+              {isOpen && (
+                <div style={{ borderTop:"1px solid "+brand.accent+"22", marginTop:14, paddingTop:14 }}>
+                  {/* Score breakdown */}
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
+                    {[
+                      { label:"Fit Score",        val:deal.fitScore,       color:deal.fitScore>=80?C.green:C.yellow },
+                      { label:"Audience Match",   val:deal.audienceMatch,  color:deal.audienceMatch>=80?C.green:C.yellow },
+                      { label:"Brand Alignment",  val:deal.brandAlignment, color:deal.brandAlignment>=80?C.green:C.yellow },
+                    ].map(m => (
+                      <div key={m.label} style={{ background:brand.accent+"0d", border:"1px solid "+brand.accent+"22", borderRadius:9, padding:"10px 14px" }}>
+                        <div style={{ fontSize:10, color:C.muted, marginBottom:4, textTransform:"uppercase", letterSpacing:"0.08em" }}>{m.label}</div>
+                        <div style={{ fontSize:20, fontWeight:800, color:m.color }}>{m.val}<span style={{ fontSize:11, color:C.muted }}>/100</span></div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Deadline */}
+                  <div style={{ fontSize:11, color:C.muted, marginBottom:12 }}>
+                    ⏰ Deadline: <span style={{ color:deal.priority==="urgent"?C.red:C.text, fontWeight:600 }}>{deal.deadline}</span>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display:"flex", gap:8 }}>
+                    <button onClick={e=>{e.stopPropagation();setChatAgent(MONO_AGENTS[1]);}}
+                      style={{ background:C.blue+"22", border:"1px solid "+C.blue+"44", borderRadius:7, padding:"8px 14px", color:C.blue, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                      ✉️ Draft Outreach
+                    </button>
+                    <button onClick={e=>{e.stopPropagation();setChatAgent(MONO_AGENTS[2]);}}
+                      style={{ background:C.teal+"22", border:"1px solid "+C.teal+"44", borderRadius:7, padding:"8px 14px", color:C.teal, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                      🤝 Build Package
+                    </button>
+                    <button onClick={e=>{e.stopPropagation();setDeals(ds=>ds.map(d=>d.id===deal.id?{...d,status:d.status==="prospect"?"outreach_drafted":d.status==="outreach_drafted"?"interested":"closed"}:d));}}
+                      style={{ background:C.green+"22", border:"1px solid "+C.green+"44", borderRadius:7, padding:"8px 14px", color:C.green, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                      → Advance Stage
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-            <div style={{ textAlign:"right" }}>
-              <div style={{ fontSize:15, fontWeight:800, color:C.green }}>{deal.revenue}</div>
-              <div style={{ fontSize:12, color:deal.fitScore>=80?C.green:deal.fitScore>=65?C.yellow:C.red }}>Fit {deal.fitScore}/100</div>
-            </div>
-          </div>
-          {selected?.id === deal.id && (
-            <div style={{ borderTop:"1px solid "+C.border, paddingTop:12, marginTop:12, display:"flex", gap:8 }}>
-              <button onClick={e=>{e.stopPropagation();setChatAgent(MONO_AGENTS[1]);}} style={{ background:C.blue+"22", border:"1px solid "+C.blue+"44", borderRadius:7, padding:"7px 14px", color:C.blue, fontSize:12, fontWeight:700, cursor:"pointer" }}>✉️ Draft Outreach</button>
-              <button onClick={e=>{e.stopPropagation();setChatAgent(MONO_AGENTS[2]);}} style={{ background:C.teal+"22", border:"1px solid "+C.teal+"44", borderRadius:7, padding:"7px 14px", color:C.teal, fontSize:12, fontWeight:700, cursor:"pointer" }}>🤝 Build Package</button>
-              <button onClick={e=>{e.stopPropagation();setDeals(ds=>ds.map(d=>d.id===deal.id?{...d,status:d.status==="prospect"?"outreach_drafted":d.status==="outreach_drafted"?"interested":"closed"}:d));}} style={{ background:C.green+"22", border:"1px solid "+C.green+"44", borderRadius:7, padding:"7px 14px", color:C.green, fontSize:12, fontWeight:700, cursor:"pointer" }}>→ Advance Stage</button>
-            </div>
-          )}
-        </div>
-      ))}
+          );
+        })}
+      </div>
+
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
     </div>
   );
