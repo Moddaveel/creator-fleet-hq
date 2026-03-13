@@ -285,11 +285,11 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <div style={{ fontSize:17, fontWeight:800 }}>Publishing Calendar</div>
                 <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{scheduledCount} posts scheduled</div>
               </div>
-              {/* Month nav */}
-              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                <button onClick={prevMonth} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, width:32, height:32, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>‹</button>
-                <div style={{ fontSize:15, fontWeight:800, minWidth:160, textAlign:"center" }}>{MONTH_NAMES[calMonth]} {calYear}</div>
-                <button onClick={nextMonth} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, width:32, height:32, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>›</button>
+              {/* Month nav pill */}
+              <div style={{ display:"flex", alignItems:"center", gap:8, background:C.card, border:"1px solid "+C.border, borderRadius:12, padding:"6px 10px" }}>
+                <button onClick={prevMonth} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:7, width:30, height:30, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>‹</button>
+                <div style={{ fontSize:13, fontWeight:800, minWidth:150, textAlign:"center", color:C.text }}>{MONTH_NAMES[calMonth]} {calYear}</div>
+                <button onClick={nextMonth} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:7, width:30, height:30, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>›</button>
               </div>
             </div>
 
@@ -315,10 +315,9 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               <MonthCalendar queue={publishQueue} year={calYear} month={calMonth} />
             </div>
 
-            {/* Best times — below calendar */}
-            <div style={{ marginTop:16 }}>
-              <Sect>Best Posting Times</Sect>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginTop:12 }}>
+            {/* Best Posting Times — between legend and calendar */}
+            <div style={{ marginBottom:16 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
                 {Object.entries(PLATFORM_META).map(([k,v]) => (
                   <div key={k} style={{ background:v.color+"0d", border:"1px solid "+v.color+"33", borderRadius:14, padding:16 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
