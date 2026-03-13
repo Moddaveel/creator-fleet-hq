@@ -135,7 +135,7 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         if (!grp.length) return null;
         const labels = { urgent:"🔴 Urgent", high:"🟠 High Priority", normal:"🟣 Normal", low:"⚪ Low" };
         return (
-          <div key={p} style={{ marginBottom:24, border:"1px solid "+pColor(p)+"44", borderRadius:14, padding:16, background:pColor(p)+"07" }}>
+          <div key={p} style={{ marginBottom:24, border:"2px solid "+pColor(p)+"99", borderRadius:14, padding:16, background:pColor(p)+"12" }}>
             <div style={{ fontSize:11, fontWeight:700, color:pColor(p), letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}><div style={{ flex:1 }}>{labels[p]+" ("+grp.length+")"}</div><div style={{ height:1, background:pColor(p)+"33", flex:20 }} /></div>
             {grp.map(item => (
               <div key={item.id} style={{ background:pBg(p), border:"1px solid "+pBorder(p), borderRadius:12, padding:16, marginBottom:10 }}>
