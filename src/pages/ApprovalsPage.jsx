@@ -5,6 +5,9 @@ import Countdown from "../components/Countdown";
 import RejectModal from "../components/RejectModal";
 import ApproveScheduleModal from "../components/ApproveScheduleModal";
 
+const pBg  = p => ({urgent:'#1a0808', high:'#160d04', normal:'#120818', low:'#0e0e12'}[p] || '#12121a');
+const pBorder = p => ({urgent:'rgba(239,68,68,0.35)', high:'rgba(249,115,22,0.35)', normal:'rgba(168,85,247,0.35)', low:'rgba(100,116,139,0.2)'}[p] || C.border);
+
 export default function ApprovalsPage({ items, setItems, toast, onApproveAndSchedule }) {
   const [search, setSearch] = useState("");
   const [rejectTarget, setRejectTarget] = useState(null);
@@ -135,7 +138,7 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
           <div key={p} style={{ marginBottom:24, border:"1px solid "+pColor(p)+"44", borderRadius:14, padding:16, background:pColor(p)+"07" }}>
             <div style={{ fontSize:11, fontWeight:700, color:pColor(p), letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}><div style={{ flex:1 }}>{labels[p]+" ("+grp.length+")"}</div><div style={{ height:1, background:pColor(p)+"33", flex:20 }} /></div>
             {grp.map(item => (
-              <div key={item.id} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:12, padding:16, marginBottom:10 }}>
+              <div key={item.id} style={{ background:pBg(p), border:"1px solid "+pBorder(p), borderRadius:12, padding:16, marginBottom:10 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
                   <div style={{ flex:1, marginRight:12 }}>
                     <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{item.title}</div>
