@@ -48,7 +48,10 @@ function CalendarView({ queue, onSelectItem }) {
                       <div key={d.label} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:4, minHeight:32, padding:2 }}>
                         {items.map((item, i) => {
                           const meta = PLATFORM_META[item.platform] || { color:C.muted, icon:"📱" };
-                          return <div key={i} onClick={() => onSelectItem&&onSelectItem(item.pub_id)} title={item.itemTitle} style={{ background:meta.color+"33", border:"1px solid "+meta.color+"55", borderRadius:3, padding:"2px 5px", fontSize:9, color:meta.color, fontWeight:700, marginBottom:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"pointer" }}>{meta.icon} {item.itemTitle.slice(0,16)}</div>;
+                          return <div key={i} onClick={() => onSelectItem&&onSelectItem(item.pub_id)} title={item.itemTitle}
+                            style={{ background:meta.color+"33", border:"1px solid "+meta.color+"55", borderRadius:3, padding:"2px 5px", fontSize:9, color:meta.color, fontWeight:700, marginBottom:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"pointer" }}>
+                            {meta.icon} {item.itemTitle.slice(0,16)}
+                          </div>;
                         })}
                       </div>
                     );
@@ -63,15 +66,23 @@ function CalendarView({ queue, onSelectItem }) {
   );
 }
 
+const STAT_FILTERS = [
+  { key:"all",       label:"Total Posts", icon:"📤", accent:"#a855f7", bg:"#18061a", border:"rgba(168,85,247,0.45)" },
+  { key:"scheduled", label:"Scheduled",  icon:"📅", accent:"#3b82f6", bg:"#080e1a", border:"rgba(59,130,246,0.45)"  },
+  { key:"draft",     label:"Drafts",     icon:"✏️",  accent:"#eab308", bg:"#16120a", border:"rgba(234,179,8,0.45)"   },
+  { key:"published", label:"Published",  icon:"✅", accent:"#22c55e", bg:"#08160e", border:"rgba(34,197,94,0.45)"   },
+];
+
 export default function PublishingPage({ publishQueue, setPublishQueue, toast }) {
   const [subpage, setSubpage] = useState("queue");
   const [chatAgent, setChatAgent] = useState(null);
   const [selectedPubId, setSelectedPubId] = useState(null);
+  const [filter, setFilter] = useState("all");
 
   const SUBPAGES = [
-    {id:"queue",    label:"Queue",    icon:"📤"},
+    {id:"queue", label:"Queue", icon:"📤"},
     {id:"calendar", label:"Calendar", icon:"📅"},
-    {id:"agents",   label:"Agents",   icon:"🤖"},
+    {id:"agents", label:"Agents", icon:"🤖"},
   ];
 
   const markPublished = (pubId, platIdx) => {
@@ -87,8 +98,20 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
   const draftCount     = publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="draft").length,0);
   const totalPosts     = publishQueue.reduce((a,i)=>a+i.platforms.length,0);
 
+  const statVals = { all:totalPosts, scheduled:scheduledCount, draft:draftCount, published:publishedCount };
+
+  // Filter queue items — keep item if it has at least one platform matching the filter
+  const filteredQueue = filter === "all"
+    ? publishQueue
+    : publishQueue.map(item => ({
+        ...item,
+        platforms: item.platforms.filter(p => p.status === filter)
+      })).filter(item => item.platforms.length > 0);
+
   return (
     <div style={{ height:"calc(100vh - 112px)", display:"flex", flexDirection:"column" }}>
+
+      {/* Sub-nav */}
       <div style={{ background:C.card, borderBottom:"1px solid "+C.border, padding:"0 24px", display:"flex", gap:2, alignItems:"center", flexShrink:0 }}>
         {SUBPAGES.map(sp => (
           <button key={sp.id} onClick={() => setSubpage(sp.id)} style={{ background:"transparent", border:"none", borderBottom:"2px solid "+(subpage===sp.id?C.blue:"transparent"), color:subpage===sp.id?C.blue:C.muted, padding:"10px 14px", fontSize:12, fontWeight:subpage===sp.id?700:400, cursor:"pointer", display:"flex", gap:5, alignItems:"center" }}>
@@ -100,25 +123,52 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
           {PUB_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
         </div>
       </div>
+
       <div style={{ flex:1, overflowY:"auto" }}>
         {subpage==="queue" && (
           <div style={{ padding:24 }}>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:20 }}>
-              {[{label:"Total Posts",val:totalPosts,color:C.purple},{label:"Scheduled",val:scheduledCount,color:C.blue},{label:"Drafts",val:draftCount,color:C.yellow},{label:"Published",val:publishedCount,color:C.green}].map((s,i) => (
-                <div key={i} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:10, padding:"12px 16px" }}>
-                  <div style={{ fontSize:22, fontWeight:900, color:s.color }}>{s.val}</div>
-                  <div style={{ fontSize:11, color:C.muted }}>{s.label}</div>
-                </div>
-              ))}
+
+            {/* Stat filter cards */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:24 }}>
+              {STAT_FILTERS.map(s => {
+                const active = filter === s.key;
+                return (
+                  <div key={s.key} onClick={() => setFilter(active ? "all" : s.key)}
+                    style={{ background:s.bg, border:"1px solid "+(active ? s.accent+"99" : s.border), borderRadius:14, padding:16, cursor:"pointer", transition:"border 0.15s", outline: active ? "1px solid "+s.accent+"44" : "none" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+                      <div style={{ width:32, height:32, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>{s.icon}</div>
+                      <div style={{ fontSize:11, fontWeight:700, color: active ? s.accent : C.muted }}>{s.label}</div>
+                      {active && <div style={{ marginLeft:"auto", width:8, height:8, borderRadius:4, background:s.accent }} />}
+                    </div>
+                    <div style={{ borderTop:"1px solid "+s.accent+"18", marginBottom:10 }} />
+                    <div style={{ fontSize:26, fontWeight:900, color:s.accent }}>{statVals[s.key]}</div>
+                  </div>
+                );
+              })}
             </div>
-            {publishQueue.length === 0 ? (
+
+            {/* Filter label */}
+            {filter !== "all" && (
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+                <div style={{ fontSize:12, color:C.muted }}>Filtering by:</div>
+                <Chip label={STAT_FILTERS.find(s=>s.key===filter)?.label} color={STAT_FILTERS.find(s=>s.key===filter)?.accent} />
+                <button onClick={() => setFilter("all")} style={{ background:"transparent", border:"none", color:C.muted, fontSize:11, cursor:"pointer", textDecoration:"underline" }}>Clear</button>
+              </div>
+            )}
+
+            {/* Queue */}
+            {filteredQueue.length === 0 ? (
               <div style={{ textAlign:"center", padding:"80px 0" }}>
                 <div style={{ fontSize:40, marginBottom:12 }}>📤</div>
-                <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>Queue is empty</div>
-                <div style={{ fontSize:13, color:C.muted }}>Use "Approve + Schedule" in the Approval Queue to add content here</div>
+                <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>
+                  {filter === "all" ? "Queue is empty" : "No "+filter+" posts"}
+                </div>
+                <div style={{ fontSize:13, color:C.muted }}>
+                  {filter === "all" ? 'Use "Approve + Schedule" in the Approval Queue to add content here' : ""}
+                </div>
               </div>
             ) : (
-              publishQueue.map(item => (
+              filteredQueue.map(item => (
                 <div key={item.pub_id} style={{ background:C.card2, border:"1px solid "+(selectedPubId===item.pub_id?C.blue+"66":C.border), borderRadius:12, padding:16, marginBottom:12, overflow:"hidden" }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
                     <div>
@@ -140,12 +190,16 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                           <div style={{ fontSize:11, color:C.muted, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.hook||p.caption||"No copy set"}</div>
                         </div>
                         <div style={{ flexShrink:0 }}>
-                          {p.scheduledTime ? <div style={{ fontSize:10, color:C.blue, fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div> : <span style={{ fontSize:10, color:C.muted }}>Not scheduled</span>}
+                          {p.scheduledTime
+                            ? <div style={{ fontSize:10, color:C.blue, fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>
+                            : <span style={{ fontSize:10, color:C.muted }}>Not scheduled</span>}
                         </div>
                         <div style={{ flexShrink:0 }}>
-                          {p.status==="published" ? <Chip label="✅ Published" color={C.green} sm />
-                            : p.status==="scheduled" ? <button onClick={() => markPublished(item.pub_id,pi)} style={{ background:C.green+"22", border:"1px solid "+C.green+"44", borderRadius:6, padding:"3px 10px", color:C.green, fontSize:11, fontWeight:700, cursor:"pointer" }}>Mark Published</button>
-                            : <Chip label="Draft" color={C.muted} sm />}
+                          {p.status==="published"
+                            ? <Chip label="✅ Published" color={C.green} sm />
+                            : p.status==="scheduled"
+                              ? <button onClick={() => markPublished(item.pub_id,pi)} style={{ background:C.green+"22", border:"1px solid "+C.green+"44", borderRadius:6, padding:"3px 10px", color:C.green, fontSize:11, fontWeight:700, cursor:"pointer" }}>Mark Published</button>
+                              : <Chip label="Draft" color={C.muted} sm />}
                         </div>
                       </div>
                     );
@@ -155,6 +209,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
             )}
           </div>
         )}
+
         {subpage==="calendar" && (
           <div style={{ padding:24 }}>
             <div style={{ marginBottom:16 }}>
@@ -185,6 +240,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
             </div>
           </div>
         )}
+
         {subpage==="agents" && (
           <div style={{ padding:24 }}>
             <div style={{ marginBottom:20 }}>
@@ -205,10 +261,10 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
             <Card style={{ marginTop:20 }}>
               <Sect>Publishing SLA — Targets</Sect>
               {[
-                {metric:"Approval to Queue",   target:"<5 min",  note:"Approve + Schedule is instant"},
-                {metric:"Queue to Scheduled",  target:"<30 min", note:"Scheduling Agent recommends time"},
-                {metric:"Approval to Publish", target:"<2 hrs",  note:"Currently 4.2 hrs — gap to close"},
-                {metric:"Stream to Published", target:"<48 hrs", note:"Currently 3.2 days — primary target"},
+                {metric:"Approval to Queue",    target:"<5 min",  note:"Approve + Schedule is instant"},
+                {metric:"Queue to Scheduled",   target:"<30 min", note:"Scheduling Agent recommends time"},
+                {metric:"Approval to Publish",  target:"<2 hrs",  note:"Currently 4.2 hrs — gap to close"},
+                {metric:"Stream to Published",  target:"<48 hrs", note:"Currently 3.2 days — primary target"},
               ].map((s,i) => (
                 <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:i<3?"1px solid "+C.border:"none" }}>
                   <div><div style={{ fontSize:12, fontWeight:600 }}>{s.metric}</div><div style={{ fontSize:10, color:C.muted }}>{s.note}</div></div>
@@ -219,6 +275,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
           </div>
         )}
       </div>
+
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
     </div>
   );
