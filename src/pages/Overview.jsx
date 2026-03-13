@@ -187,12 +187,12 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
               <XAxis dataKey="name" stroke={C.muted} fontSize={11} tick={{fill:C.muted,fontSize:11}} />
               <YAxis stroke={C.muted} fontSize={11} tick={{fill:C.muted,fontSize:11}} tickFormatter={fmtK} />
               <Tooltip contentStyle={{background:C.card,border:"1px solid "+C.border,borderRadius:8,fontSize:12}} formatter={(v,n)=>[v.toLocaleString(), n.charAt(0).toUpperCase()+n.slice(1)]} />
-              <Legend content={({ payload }) => (
+              <Legend content={() => (
                 <div style={{ display:"flex", gap:16, justifyContent:"center", paddingTop:8 }}>
-                  {payload.map(e => (
-                    <div key={e.dataKey} style={{ display:"flex", alignItems:"center", gap:6 }}>
-                      <div style={{ width:12, height:12, background:e.fill, borderRadius:3 }} />
-                      <span style={{ fontSize:11, color:C.muted, textTransform:"capitalize" }}>{e.dataKey}</span>
+                  {[{key:"views",color:C.purple},{key:"shares",color:C.neon}].map(e => (
+                    <div key={e.key} style={{ display:"flex", alignItems:"center", gap:6 }}>
+                      <div style={{ width:12, height:12, background:e.color, borderRadius:3 }} />
+                      <span style={{ fontSize:11, color:C.muted, textTransform:"capitalize" }}>{e.key}</span>
                     </div>
                   ))}
                 </div>
