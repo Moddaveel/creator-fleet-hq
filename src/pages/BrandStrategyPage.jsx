@@ -9,32 +9,105 @@ import AgentButton from "../components/AgentButton";
 
 export default function BrandStrategyPage() {
   const [chatAgent, setChatAgent] = useState(null);
+  const { identity, voice } = BRAND_DOCTRINE;
+
   return (
-    <div style={{ padding:24, maxWidth:1000, margin:"0 auto" }}>
-      <div style={{ marginBottom:20 }}><div style={{ fontSize:17, fontWeight:800 }}>Brand Strategy</div></div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
-        <Card>
-          <Sect>Archetype</Sect>
-          <div style={{ fontSize:22, fontWeight:800, color:C.purple, marginBottom:12 }}>{BRAND_DOCTRINE.identity.archetype}</div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{BRAND_DOCTRINE.identity.traits.map(t => <Chip key={t} label={t} color={C.purple} />)}</div>
-        </Card>
-        <Card><Sect>Value Prop</Sect><div style={{ fontSize:13, lineHeight:1.7 }}>{BRAND_DOCTRINE.identity.valueProp}</div></Card>
-      </div>
-      <Card style={{ marginBottom:14 }}>
-        <Sect>Tone Rules</Sect>
-        {BRAND_DOCTRINE.voice.toneRules.map((r, i) => (
-          <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, padding:"10px 0", borderBottom:i<3?"1px solid "+C.border:"none" }}>
-            <div><div style={{ fontSize:10, color:C.green, fontWeight:700, marginBottom:4 }}>✓ DO</div><div style={{ fontSize:12 }}>{r.do}</div></div>
-            <div><div style={{ fontSize:10, color:C.red, fontWeight:700, marginBottom:4 }}>✕ DON'T</div><div style={{ fontSize:12, color:C.muted }}>{r.dont}</div></div>
-          </div>
-        ))}
-      </Card>
-      <Card>
-        <Sect>Agents</Sect>
-        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+    <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
+
+      {/* Header */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
+        <div>
+          <div style={{ fontSize:17, fontWeight:800 }}>Brand Strategy</div>
+          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Voice, identity, and content doctrine</div>
+        </div>
+        <div style={{ display:"flex", gap:6 }}>
           {BS_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
         </div>
-      </Card>
+      </div>
+
+      {/* Identity row */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
+
+        {/* Archetype */}
+        <div style={{ background:"#18061a", border:"1px solid rgba(168,85,247,0.45)", borderRadius:14, padding:20 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+            <div style={{ width:34, height:34, background:C.purple+"20", border:"1px solid "+C.purple+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🎭</div>
+            <div style={{ fontSize:12, fontWeight:700, color:C.purple }}>Archetype</div>
+          </div>
+          <div style={{ borderTop:"1px solid "+C.purple+"18", marginBottom:14 }} />
+          <div style={{ fontSize:20, fontWeight:900, color:C.purple, marginBottom:14 }}>{identity.archetype}</div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
+            {identity.traits.map(t => <Chip key={t} label={t} color={C.purple} />)}
+          </div>
+        </div>
+
+        {/* Value Prop */}
+        <div style={{ background:"#080e1a", border:"1px solid rgba(59,130,246,0.45)", borderRadius:14, padding:20 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+            <div style={{ width:34, height:34, background:C.blue+"20", border:"1px solid "+C.blue+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>💡</div>
+            <div style={{ fontSize:12, fontWeight:700, color:C.blue }}>Value Proposition</div>
+          </div>
+          <div style={{ borderTop:"1px solid "+C.blue+"18", marginBottom:14 }} />
+          <div style={{ fontSize:13, lineHeight:1.8, color:C.text }}>{identity.valueProp}</div>
+        </div>
+      </div>
+
+      {/* Tone Rules */}
+      <div style={{ marginBottom:14 }}>
+        <Sect>Tone Rules</Sect>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginTop:12 }}>
+
+          {/* DO column */}
+          <div style={{ background:"#08160e", border:"1px solid rgba(34,197,94,0.45)", borderRadius:14, padding:20 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+              <div style={{ width:34, height:34, background:C.green+"20", border:"1px solid "+C.green+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>✓</div>
+              <div style={{ fontSize:13, fontWeight:800, color:C.green }}>DO</div>
+            </div>
+            <div style={{ borderTop:"1px solid "+C.green+"18", marginBottom:14 }} />
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {voice.toneRules.map((r, i) => (
+                <div key={i} style={{ background:C.green+"0d", border:"1px solid "+C.green+"22", borderRadius:9, padding:"10px 14px", fontSize:12, lineHeight:1.6, color:C.text }}>
+                  {r.do}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* DON'T column */}
+          <div style={{ background:"#1a0808", border:"1px solid rgba(239,68,68,0.45)", borderRadius:14, padding:20 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+              <div style={{ width:34, height:34, background:C.red+"20", border:"1px solid "+C.red+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>✕</div>
+              <div style={{ fontSize:13, fontWeight:800, color:C.red }}>DON'T</div>
+            </div>
+            <div style={{ borderTop:"1px solid "+C.red+"18", marginBottom:14 }} />
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {voice.toneRules.map((r, i) => (
+                <div key={i} style={{ background:C.red+"0d", border:"1px solid "+C.red+"22", borderRadius:9, padding:"10px 14px", fontSize:12, lineHeight:1.6, color:C.muted }}>
+                  {r.dont}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Banned Phrases */}
+      <div style={{ background:"#16120a", border:"1px solid rgba(234,179,8,0.45)", borderRadius:14, padding:20, marginBottom:14 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+          <div style={{ width:34, height:34, background:C.yellow+"20", border:"1px solid "+C.yellow+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🚫</div>
+          <div style={{ fontSize:12, fontWeight:700, color:C.yellow }}>Banned Phrases</div>
+        </div>
+        <div style={{ borderTop:"1px solid "+C.yellow+"18", marginBottom:14 }} />
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:10 }}>
+          {voice.bannedPhrases.map((b, i) => (
+            <div key={i} style={{ background:C.yellow+"0d", border:"1px solid "+C.yellow+"22", borderRadius:9, padding:"10px 14px" }}>
+              <div style={{ fontSize:12, fontWeight:700, color:C.yellow, marginBottom:4 }}>"{b.phrase}"</div>
+              <div style={{ fontSize:11, color:C.muted }}>{b.reason}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
     </div>
   );
