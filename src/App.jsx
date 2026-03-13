@@ -13,7 +13,7 @@ import BrandStrategyPage from "./pages/BrandStrategyPage";
 import MonetizationPage from "./pages/MonetizationPage";
 import ExecutiveOfficePage from "./pages/ExecutiveOfficePage";
 
-const NAV=[{id:"executive",label:"Executive Office",icon:"🏢"},{id:"overview",label:"Overview",icon:"🏠"},{id:"approvals",label:"Approvals",icon:"✅"},{id:"studio",label:"Content Studio",icon:"🎬"},{id:"publishing",label:"Publishing",icon:"📤"},{id:"brand",label:"Brand Strategy",icon:"🎯"},{id:"monetization",label:"Monetization",icon:"💰"}];
+const NAV=[{id:"overview",label:"Overview",icon:"🏠"},{id:"studio",label:"Content Studio",icon:"🎬"},{id:"approvals",label:"Approvals",icon:"✅"},{id:"publishing",label:"Publishing",icon:"🚀"},{id:"brand",label:"Brand Strategy",icon:"🎯"},{id:"monetization",label:"Monetization",icon:"💰"},{id:"executive",label:"Executive Office",icon:"🏢"}];
 
 export default function App() {
   const [page,setPage]=useState("approvals");
