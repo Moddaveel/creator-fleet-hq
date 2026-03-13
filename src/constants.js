@@ -12,10 +12,10 @@ export const momentColor=(m)=>({skill:C.purple,discovery:C.teal,reaction:C.yello
 export const dealStatusColor=(s)=>({outreach_drafted:C.blue,interested:C.green,prospect:C.yellow,declined:C.red}[s]||C.muted);
 export const dealStatusLabel=(s)=>({outreach_drafted:"Outreach Drafted",interested:"Interested",prospect:"Prospect",declined:"Declined"}[s]||s);
 export const PLATFORM_META={
-  tiktok:{icon:"⚫",label:"TikTok",color:"#aaaaaa",charLimit:2200,bestTimes:["7:00 PM","8:00 PM","9:00 PM"],aspectRatio:"9:16",maxDuration:"60s",notes:"Hook in first 2s. 4-6 hashtags. No external links."},
-  youtube_shorts:{icon:"🔴",label:"YT Shorts",color:"#ff4444",charLimit:100,bestTimes:["12:00 PM","6:00 PM","9:00 PM"],aspectRatio:"9:16",maxDuration:"60s",notes:"SEO title under 100 chars. Vertical only."},
-  instagram_reels:{icon:"🟠",label:"Instagram",color:"#f97316",charLimit:2200,bestTimes:["9:00 AM","11:00 AM","7:00 PM"],aspectRatio:"9:16",maxDuration:"90s",notes:"6-10 hashtags. First line is the hook."},
-  youtube:{icon:"🔴",label:"YouTube",color:"#ff4444",charLimit:5000,bestTimes:["12:00 PM","3:00 PM","6:00 PM"],aspectRatio:"16:9",maxDuration:"∞",notes:"Title 60-70 chars. Description with chapters. 8-10 tags."},
+  tiktok:{icon:"⚫",label:"TikTok",color:"#69c9d0",charLimit:2200,bestTimes:["7:00 PM","8:00 PM","9:00 PM"],aspectRatio:"9:16",maxDuration:"60s",notes:"Hook in first 2s. 4-6 hashtags. No external links."},
+  youtube_shorts:{icon:"🔴",label:"YT Shorts",color:"#ff6b6b",charLimit:100,bestTimes:["12:00 PM","6:00 PM","9:00 PM"],aspectRatio:"9:16",maxDuration:"60s",notes:"SEO title under 100 chars. Vertical only."},
+  instagram_reels:{icon:"🟠",label:"Instagram",color:"#E1306C",charLimit:2200,bestTimes:["9:00 AM","11:00 AM","7:00 PM"],aspectRatio:"9:16",maxDuration:"90s",notes:"6-10 hashtags. First line is the hook."},
+  youtube:{icon:"🔴",label:"YouTube",color:"#FF0000",charLimit:5000,bestTimes:["12:00 PM","3:00 PM","6:00 PM"],aspectRatio:"16:9",maxDuration:"∞",notes:"Title 60-70 chars. Description with chapters. 8-10 tags."},
 };
 export const REJECTION_REASONS=["Doesn't match brand voice","Wrong timing / posting window","Quality not there yet","Strategy misaligned","Needs more context","Custom note..."];
 export const ALERTS=[
