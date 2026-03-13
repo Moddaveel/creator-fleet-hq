@@ -7,60 +7,85 @@ import Sect from "../components/Sect";
 import AgentChat from "../components/AgentChat";
 import AgentButton from "../components/AgentButton";
 
-function CalendarView({ queue, onSelectItem }) {
-  const days = [
-    {label:"Mon 10",num:10},{label:"Tue 11",num:11},{label:"Wed 12",num:12},
-    {label:"Thu 13",num:13},{label:"Fri 14",num:14},{label:"Sat 15",num:15},{label:"Sun 16",num:16},
-  ];
-  const timeSlots = [
-    {label:"Morning",hours:[6,7,8,9,10,11]},
-    {label:"Afternoon",hours:[12,13,14,15,16,17]},
-    {label:"Evening",hours:[18,19,20,21,22,23]},
-  ];
-  const getItems = (dayNum, hour) => queue.flatMap(item =>
-    item.platforms.filter(p => {
-      if (!p.scheduledTime) return false;
-      const d = new Date(p.scheduledTime);
-      return d.getDate() === dayNum && d.getHours() === hour;
-    }).map(p => ({ ...p, itemTitle:item.title, pub_id:item.pub_id }))
-  );
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAY_NAMES   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+function MonthCalendar({ queue, year, month }) {
+  const firstDay  = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+
+  const getPostsForDay = (day) => {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    return queue.flatMap(item =>
+      item.platforms
+        .filter(p => p.scheduledTime && new Date(p.scheduledTime).toISOString().startsWith(dateStr))
+        .map(p => ({ ...p, itemTitle: item.title }))
+    );
+  };
+
+  // Build grid cells: leading empty + day cells
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  // Pad to complete last row
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const isToday = (d) => d && today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+
   return (
-    <div style={{ overflowX:"auto" }}>
-      <div style={{ minWidth:760 }}>
-        <div style={{ display:"grid", gridTemplateColumns:"80px repeat(7,1fr)", gap:1, marginBottom:8 }}>
-          <div />
-          {days.map(d => <div key={d.label} style={{ textAlign:"center", padding:"8px 4px", background:C.card2, borderRadius:"6px 6px 0 0", fontSize:11, fontWeight:700, color:C.text }}>{d.label}</div>)}
-        </div>
-        {timeSlots.map(slot => (
-          <div key={slot.label} style={{ marginBottom:16 }}>
-            <div style={{ fontSize:10, color:C.muted, fontWeight:700, marginBottom:6 }}>{slot.label.toUpperCase()}</div>
-            {slot.hours.map(hour => {
-              const hasAny = days.some(d => getItems(d.num, hour).length > 0);
-              if (!hasAny) return null;
-              return (
-                <div key={hour} style={{ display:"grid", gridTemplateColumns:"80px repeat(7,1fr)", gap:1, marginBottom:1 }}>
-                  <div style={{ fontSize:10, color:C.muted, display:"flex", alignItems:"center", paddingRight:8, justifyContent:"flex-end" }}>
-                    {hour===0?"12AM":hour<12?hour+"AM":hour===12?"12PM":(hour-12)+"PM"}
-                  </div>
-                  {days.map(d => {
-                    const items = getItems(d.num, hour);
-                    return (
-                      <div key={d.label} style={{ background:C.card2, border:"1px solid "+C.border, borderRadius:4, minHeight:32, padding:2 }}>
-                        {items.map((item, i) => {
-                          const meta = PLATFORM_META[item.platform] || { color:C.muted, icon:"📱" };
-                          return <div key={i} onClick={() => onSelectItem&&onSelectItem(item.pub_id)} title={item.itemTitle}
-                            style={{ background:meta.color+"33", border:"1px solid "+meta.color+"55", borderRadius:3, padding:"2px 5px", fontSize:9, color:meta.color, fontWeight:700, marginBottom:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"pointer" }}>
-                            {meta.icon} {item.itemTitle.slice(0,16)}
-                          </div>;
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
+    <div>
+      {/* Day headers */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4, marginBottom:4 }}>
+        {DAY_NAMES.map(d => (
+          <div key={d} style={{ textAlign:"center", fontSize:11, fontWeight:700, color:C.muted, padding:"6px 0", textTransform:"uppercase", letterSpacing:"0.08em" }}>{d}</div>
         ))}
+      </div>
+      {/* Day cells */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
+        {cells.map((day, i) => {
+          if (!day) return <div key={"empty-"+i} style={{ minHeight:90, borderRadius:10, background:"transparent" }} />;
+          const posts = getPostsForDay(day);
+          const isTod = isToday(day);
+          return (
+            <div key={day} style={{
+              minHeight:90, borderRadius:10, padding:8,
+              background: isTod ? C.purple+"18" : C.card,
+              border:"1px solid "+(isTod ? C.purple+"66" : C.border),
+              display:"flex", flexDirection:"column", gap:3,
+            }}>
+              {/* Day number */}
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
+                <div style={{
+                  width:22, height:22, borderRadius:11,
+                  background: isTod ? C.purple : "transparent",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontSize:11, fontWeight: isTod ? 800 : 500,
+                  color: isTod ? "#fff" : C.muted,
+                }}>{day}</div>
+                {posts.length > 2 && (
+                  <div style={{ fontSize:9, color:C.muted, fontWeight:600 }}>+{posts.length-2}</div>
+                )}
+              </div>
+              {/* Post pills — show max 2 */}
+              {posts.slice(0,2).map((p, pi) => {
+                const meta = PLATFORM_META[p.platform] || { color:C.muted, icon:"📱", label:p.platform };
+                return (
+                  <div key={pi} title={p.itemTitle} style={{
+                    background: meta.color+"22", border:"1px solid "+meta.color+"44",
+                    borderRadius:5, padding:"2px 5px",
+                    fontSize:9, fontWeight:700, color:meta.color,
+                    overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                    display:"flex", alignItems:"center", gap:3,
+                  }}>
+                    <span>{meta.icon}</span>
+                    <span style={{ overflow:"hidden", textOverflow:"ellipsis" }}>{p.itemTitle.slice(0,14)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -80,21 +105,25 @@ const statusStyles = {
 };
 
 export default function PublishingPage({ publishQueue, setPublishQueue, toast }) {
-  const [subpage, setSubpage] = useState("queue");
-  const [chatAgent, setChatAgent] = useState(null);
+  const [subpage, setSubpage]       = useState("queue");
+  const [chatAgent, setChatAgent]   = useState(null);
   const [expandedIds, setExpandedIds] = useState(new Set());
-  const [filter, setFilter] = useState("all");
-  const toggleExpand = id => setExpandedIds(prev => {
-    const next = new Set(prev);
-    next.has(id) ? next.delete(id) : next.add(id);
-    return next;
-  });
+  const [filter, setFilter]         = useState("all");
+  const today = new Date();
+  const [calYear,  setCalYear]  = useState(today.getFullYear());
+  const [calMonth, setCalMonth] = useState(today.getMonth());
 
   const SUBPAGES = [
     {id:"queue",    label:"Queue",    icon:"📤"},
     {id:"calendar", label:"Calendar", icon:"📅"},
     {id:"agents",   label:"Agents",   icon:"🤖"},
   ];
+
+  const toggleExpand = id => setExpandedIds(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   const markPublished = (pubId, platIdx) => {
     setPublishQueue(q => q.map(item => {
@@ -117,6 +146,9 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
         platforms: item.platforms.filter(p => p.status === filter)
       })).filter(item => item.platforms.length > 0);
 
+  const prevMonth = () => { if (calMonth===0){setCalMonth(11);setCalYear(y=>y-1);}else setCalMonth(m=>m-1); };
+  const nextMonth = () => { if (calMonth===11){setCalMonth(0);setCalYear(y=>y+1);}else setCalMonth(m=>m+1); };
+
   return (
     <div style={{ height:"calc(100vh - 112px)", display:"flex", flexDirection:"column" }}>
 
@@ -135,25 +167,23 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
       </div>
 
       <div style={{ flex:1, overflowY:"auto" }}>
+
+        {/* ── QUEUE ── */}
         {subpage==="queue" && (
           <div style={{ padding:24 }}>
-
-            {/* Header */}
             <div style={{ marginBottom:20 }}>
               <div style={{ fontSize:17, fontWeight:800 }}>Publishing Queue</div>
               <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{totalPosts} total posts · {scheduledCount} scheduled · {draftCount} drafts</div>
             </div>
-
-            {/* Stat filter cards */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:24 }}>
               {STAT_FILTERS.map(s => {
                 const active = filter === s.key;
                 return (
                   <div key={s.key} onClick={() => setFilter(s.key)}
-                    style={{ background:s.bg, border:"1px solid "+(active ? s.accent : s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform: active ? "translateY(-1px)" : "none", boxShadow: active ? "0 4px 20px "+s.accent+"22" : "none" }}>
+                    style={{ background:s.bg, border:"1px solid "+(active ? s.accent : s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform:active?"translateY(-1px)":"none", boxShadow:active?"0 4px 20px "+s.accent+"22":"none" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
                       <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
-                      <div style={{ fontSize:11, fontWeight:700, color: active ? s.accent : C.muted }}>{s.label}</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:active?s.accent:C.muted }}>{s.label}</div>
                       {active && <div style={{ marginLeft:"auto", width:8, height:8, borderRadius:4, background:s.accent, boxShadow:"0 0 6px "+s.accent }} />}
                     </div>
                     <div style={{ borderTop:"1px solid "+s.accent+"18", marginBottom:12 }} />
@@ -162,40 +192,29 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 );
               })}
             </div>
-
-            {/* Active filter label */}
             {filter !== "all" && (
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16, padding:"8px 14px", background:C.card, border:"1px solid "+C.border, borderRadius:9 }}>
                 <span style={{ fontSize:12, color:C.muted }}>Showing:</span>
                 <Chip label={STAT_FILTERS.find(s=>s.key===filter)?.label} color={STAT_FILTERS.find(s=>s.key===filter)?.accent} />
-                <span style={{ fontSize:11, color:C.muted }}>·  {filteredQueue.reduce((a,i)=>a+i.platforms.length,0)} posts</span>
+                <span style={{ fontSize:11, color:C.muted }}>· {filteredQueue.reduce((a,i)=>a+i.platforms.length,0)} posts</span>
                 <button onClick={() => setFilter("all")} style={{ marginLeft:"auto", background:"transparent", border:"1px solid "+C.border, borderRadius:6, padding:"2px 10px", color:C.muted, fontSize:11, cursor:"pointer" }}>✕ Clear</button>
               </div>
             )}
-
-            {/* Empty state */}
             {filteredQueue.length === 0 ? (
               <div style={{ textAlign:"center", padding:"80px 0" }}>
                 <div style={{ fontSize:48, marginBottom:16 }}>📤</div>
-                <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>
-                  {filter === "all" ? "Queue is empty" : "No "+filter+" posts"}
-                </div>
-                <div style={{ fontSize:13, color:C.muted }}>
-                  {filter === "all" ? 'Use "Approve + Schedule" in the Approval Queue to add content here' : ""}
-                </div>
+                <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>{filter==="all"?"Queue is empty":"No "+filter+" posts"}</div>
+                <div style={{ fontSize:13, color:C.muted }}>{filter==="all"?'Use "Approve + Schedule" in the Approval Queue to add content here':""}</div>
               </div>
             ) : (
               filteredQueue.map(item => {
                 const isSelected = expandedIds.has(item.pub_id);
                 const publishedN = item.platforms.filter(p=>p.status==="published").length;
-                const progress = Math.round((publishedN / item.platforms.length) * 100);
+                const progress = Math.round((publishedN/item.platforms.length)*100);
                 return (
-                  <div key={item.pub_id}
-                    style={{ background:C.card, border:"1px solid "+(isSelected?C.blue+"66":C.border), borderRadius:14, marginBottom:14, overflow:"hidden" }}>
-
-                    {/* Card header */}
+                  <div key={item.pub_id} style={{ background:C.card, border:"1px solid "+(isSelected?C.blue+"66":C.border), borderRadius:14, marginBottom:14, overflow:"hidden" }}>
                     <div onClick={() => toggleExpand(item.pub_id)}
-                      style={{ padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", background: isSelected ? C.blue+"08" : "transparent" }}>
+                      style={{ padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", background:isSelected?C.blue+"08":"transparent" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:14 }}>
                         <div style={{ width:42, height:42, background:C.purple+"20", border:"1px solid "+C.purple+"44", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
                           {item.type==="Clip Bundle"?"🎬":item.type==="YouTube Upload"?"▶":"📄"}
@@ -208,61 +227,41 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                           </div>
                         </div>
                       </div>
-
-                      {/* Right: progress + chevron */}
                       <div style={{ display:"flex", alignItems:"center", gap:16 }}>
                         <div style={{ textAlign:"right" }}>
                           <div style={{ fontSize:11, color:C.muted, marginBottom:4 }}>{publishedN}/{item.platforms.length} published</div>
                           <div style={{ width:100, height:4, background:C.border, borderRadius:2, overflow:"hidden" }}>
-                            <div style={{ width:progress+"%", height:"100%", background: progress===100 ? C.green : C.blue, borderRadius:2, transition:"width 0.3s" }} />
+                            <div style={{ width:progress+"%", height:"100%", background:progress===100?C.green:C.blue, borderRadius:2, transition:"width 0.3s" }} />
                           </div>
                         </div>
-                        {/* Platform icon pills */}
                         <div style={{ display:"flex", gap:4 }}>
-                          {item.platforms.map((p, pi) => {
-                            const meta = PLATFORM_META[p.platform] || { icon:"📱", color:C.muted };
-                            return <div key={pi} style={{ width:26, height:26, background:meta.color+"20", border:"1px solid "+meta.color+"44", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13 }}>{meta.icon}</div>;
+                          {item.platforms.map((p,pi) => {
+                            const meta = PLATFORM_META[p.platform]||{icon:"📱",color:C.muted};
+                            return <div key={pi} style={{ width:26,height:26,background:meta.color+"20",border:"1px solid "+meta.color+"44",borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13 }}>{meta.icon}</div>;
                           })}
                         </div>
                         <span style={{ color:C.muted, fontSize:12 }}>{isSelected?"▲":"▼"}</span>
                       </div>
                     </div>
-
-                    {/* Expanded platform rows */}
                     {isSelected && (
                       <div style={{ borderTop:"1px solid "+C.border, padding:"14px 20px", display:"flex", flexDirection:"column", gap:8 }}>
-                        {item.platforms.map((p, pi) => {
-                          const meta = PLATFORM_META[p.platform] || { icon:"📱", label:p.platform, color:C.muted };
-                          const ss = statusStyles[p.status] || statusStyles.draft;
+                        {item.platforms.map((p,pi) => {
+                          const meta = PLATFORM_META[p.platform]||{icon:"📱",label:p.platform,color:C.muted};
+                          const ss = statusStyles[p.status]||statusStyles.draft;
                           return (
-                            <div key={pi} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", background:meta.color+"0d", border:"1px solid "+meta.color+"33", borderRadius:10 }}>
-                              {/* Platform icon */}
-                              <div style={{ width:36, height:36, background:meta.color+"20", border:"1px solid "+meta.color+"44", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>
-                                {meta.icon}
+                            <div key={pi} style={{ display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:meta.color+"0d",border:"1px solid "+meta.color+"33",borderRadius:10 }}>
+                              <div style={{ width:36,height:36,background:meta.color+"20",border:"1px solid "+meta.color+"44",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0 }}>{meta.icon}</div>
+                              <div style={{ flex:1,minWidth:0 }}>
+                                <div style={{ fontSize:12,fontWeight:700,color:meta.color,marginBottom:3 }}>{meta.label}</div>
+                                <div style={{ fontSize:11,color:C.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{p.hook||p.caption||"No copy set"}</div>
                               </div>
-                              {/* Platform info */}
-                              <div style={{ flex:1, minWidth:0 }}>
-                                <div style={{ fontSize:12, fontWeight:700, color:meta.color, marginBottom:3 }}>{meta.label}</div>
-                                <div style={{ fontSize:11, color:C.muted, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.hook||p.caption||"No copy set"}</div>
+                              <div style={{ flexShrink:0,textAlign:"right",minWidth:90 }}>
+                                {p.scheduledTime?<div style={{ fontSize:11,color:C.blue,fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>:<span style={{ fontSize:10,color:C.muted }}>Not scheduled</span>}
                               </div>
-                              {/* Schedule time */}
-                              <div style={{ flexShrink:0, textAlign:"right", minWidth:90 }}>
-                                {p.scheduledTime
-                                  ? <div style={{ fontSize:11, color:C.blue, fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>
-                                  : <span style={{ fontSize:10, color:C.muted }}>Not scheduled</span>}
-                              </div>
-                              {/* Status badge / action */}
                               <div style={{ flexShrink:0 }}>
-                                {p.status==="published" ? (
-                                  <div style={{ background:ss.bg, border:"1px solid "+ss.border, borderRadius:7, padding:"4px 10px", fontSize:11, fontWeight:700, color:ss.color }}>{ss.label}</div>
-                                ) : p.status==="scheduled" ? (
-                                  <button onClick={() => markPublished(item.pub_id,pi)}
-                                    style={{ background:C.green+"22", border:"1px solid "+C.green+"44", borderRadius:7, padding:"6px 12px", color:C.green, fontSize:11, fontWeight:700, cursor:"pointer" }}>
-                                    Mark Published
-                                  </button>
-                                ) : (
-                                  <div style={{ background:ss.bg, border:"1px solid "+ss.border, borderRadius:7, padding:"4px 10px", fontSize:11, fontWeight:700, color:ss.color }}>{ss.label}</div>
-                                )}
+                                {p.status==="published"?<div style={{ background:ss.bg,border:"1px solid "+ss.border,borderRadius:7,padding:"4px 10px",fontSize:11,fontWeight:700,color:ss.color }}>{ss.label}</div>
+                                :p.status==="scheduled"?<button onClick={()=>markPublished(item.pub_id,pi)} style={{ background:C.green+"22",border:"1px solid "+C.green+"44",borderRadius:7,padding:"6px 12px",color:C.green,fontSize:11,fontWeight:700,cursor:"pointer" }}>Mark Published</button>
+                                :<div style={{ background:ss.bg,border:"1px solid "+ss.border,borderRadius:7,padding:"4px 10px",fontSize:11,fontWeight:700,color:ss.color }}>{ss.label}</div>}
                               </div>
                             </div>
                           );
@@ -276,41 +275,72 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
           </div>
         )}
 
+        {/* ── CALENDAR ── */}
         {subpage==="calendar" && (
-          <div style={{ padding:24 }}>
-            <div style={{ marginBottom:16 }}>
-              <div style={{ fontSize:17, fontWeight:800, marginBottom:4 }}>Publishing Calendar</div>
-              <div style={{ fontSize:13, color:C.muted }}>Week of March 10–16, 2026</div>
-            </div>
-            <Card style={{ marginBottom:16 }}>
-              <div style={{ display:"flex", gap:12, marginBottom:16, flexWrap:"wrap" }}>
-                {Object.entries(PLATFORM_META).map(([k,v]) => (
-                  <div key={k} style={{ display:"flex", alignItems:"center", gap:5 }}>
-                    <div style={{ width:10, height:10, borderRadius:2, background:v.color }} />
-                    <span style={{ fontSize:11, color:C.muted }}>{v.label}</span>
-                  </div>
-                ))}
-                <div style={{ marginLeft:"auto", fontSize:11, color:C.blue, fontWeight:700 }}>{scheduledCount} posts scheduled this week</div>
+          <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
+
+            {/* Calendar header */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:17, fontWeight:800 }}>Publishing Calendar</div>
+                <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{scheduledCount} posts scheduled</div>
               </div>
-              <CalendarView queue={publishQueue} onSelectItem={id => toggleExpand(id)} />
-            </Card>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
+              {/* Month nav */}
+              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                <button onClick={prevMonth} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, width:32, height:32, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>‹</button>
+                <div style={{ fontSize:15, fontWeight:800, minWidth:160, textAlign:"center" }}>{MONTH_NAMES[calMonth]} {calYear}</div>
+                <button onClick={nextMonth} style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, width:32, height:32, color:C.text, fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>›</button>
+              </div>
+            </div>
+
+            {/* Platform legend — top */}
+            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, padding:"12px 16px", background:C.card, border:"1px solid "+C.border, borderRadius:12 }}>
+              <span style={{ fontSize:11, color:C.muted, fontWeight:700, marginRight:4, alignSelf:"center" }}>PLATFORMS</span>
               {Object.entries(PLATFORM_META).map(([k,v]) => (
-                <div key={k} style={{ background:v.color+"0d", border:"1px solid "+v.color+"33", borderRadius:14, padding:16 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                    <div style={{ width:30, height:30, background:v.color+"20", border:"1px solid "+v.color+"44", borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>{v.icon}</div>
-                    <div style={{ fontSize:12, fontWeight:700, color:v.color }}>{v.label}</div>
-                  </div>
-                  <div style={{ borderTop:"1px solid "+v.color+"18", marginBottom:10 }} />
-                  <div style={{ fontSize:10, color:C.muted, marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Best Times</div>
-                  {v.bestTimes.map((t,i) => <div key={i} style={{ fontSize:12, color:C.text, marginBottom:4, display:"flex", alignItems:"center", gap:6 }}><div style={{ width:4, height:4, borderRadius:2, background:v.color }} />{t}</div>)}
-                  <div style={{ marginTop:10, fontSize:10, color:C.muted, lineHeight:1.5 }}>{v.notes}</div>
+                <div key={k} style={{ display:"flex", alignItems:"center", gap:6, background:v.color+"15", border:"1px solid "+v.color+"33", borderRadius:7, padding:"4px 10px" }}>
+                  <span style={{ fontSize:13 }}>{v.icon}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:v.color }}>{v.label}</span>
                 </div>
               ))}
+              <div style={{ marginLeft:"auto", display:"flex", gap:10, alignItems:"center" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                  <div style={{ width:12, height:12, borderRadius:6, background:C.purple }} />
+                  <span style={{ fontSize:11, color:C.muted }}>Today</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Month grid */}
+            <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:14, padding:20 }}>
+              <MonthCalendar queue={publishQueue} year={calYear} month={calMonth} />
+            </div>
+
+            {/* Best times — below calendar */}
+            <div style={{ marginTop:16 }}>
+              <Sect>Best Posting Times</Sect>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginTop:12 }}>
+                {Object.entries(PLATFORM_META).map(([k,v]) => (
+                  <div key={k} style={{ background:v.color+"0d", border:"1px solid "+v.color+"33", borderRadius:14, padding:16 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+                      <div style={{ width:30, height:30, background:v.color+"20", border:"1px solid "+v.color+"44", borderRadius:7, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>{v.icon}</div>
+                      <div style={{ fontSize:12, fontWeight:700, color:v.color }}>{v.label}</div>
+                    </div>
+                    <div style={{ borderTop:"1px solid "+v.color+"18", marginBottom:10 }} />
+                    <div style={{ fontSize:10, color:C.muted, marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Best Times</div>
+                    {v.bestTimes.map((t,i) => (
+                      <div key={i} style={{ fontSize:12, color:C.text, marginBottom:4, display:"flex", alignItems:"center", gap:6 }}>
+                        <div style={{ width:4, height:4, borderRadius:2, background:v.color }} />{t}
+                      </div>
+                    ))}
+                    <div style={{ marginTop:10, fontSize:10, color:C.muted, lineHeight:1.5 }}>{v.notes}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
+        {/* ── AGENTS ── */}
         {subpage==="agents" && (
           <div style={{ padding:24 }}>
             <div style={{ marginBottom:20 }}>
@@ -320,7 +350,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12, marginBottom:20 }}>
               {PUB_AGENTS.map(a => (
                 <div key={a.id} onClick={() => setChatAgent(a)}
-                  style={{ background:a.color+"0d", border:"1px solid "+a.color+"33", borderRadius:14, padding:20, cursor:"pointer", transition:"border 0.15s" }}>
+                  style={{ background:a.color+"0d", border:"1px solid "+a.color+"33", borderRadius:14, padding:20, cursor:"pointer" }}>
                   <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
                     <div style={{ width:40, height:40, background:a.color+"22", border:"1px solid "+a.color+"44", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{a.icon}</div>
                     <div>
@@ -336,10 +366,10 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
             <Card>
               <Sect>Publishing SLA — Targets</Sect>
               {[
-                {metric:"Approval to Queue",   target:"<5 min",  note:"Approve + Schedule is instant",          color:C.green},
-                {metric:"Queue to Scheduled",  target:"<30 min", note:"Scheduling Agent recommends time",       color:C.green},
-                {metric:"Approval to Publish", target:"<2 hrs",  note:"Currently 4.2 hrs — gap to close",      color:C.yellow},
-                {metric:"Stream to Published", target:"<48 hrs", note:"Currently 3.2 days — primary target",   color:C.red},
+                {metric:"Approval to Queue",   target:"<5 min",  note:"Approve + Schedule is instant",        color:C.green},
+                {metric:"Queue to Scheduled",  target:"<30 min", note:"Scheduling Agent recommends time",     color:C.green},
+                {metric:"Approval to Publish", target:"<2 hrs",  note:"Currently 4.2 hrs — gap to close",    color:C.yellow},
+                {metric:"Stream to Published", target:"<48 hrs", note:"Currently 3.2 days — primary target", color:C.red},
               ].map((s,i) => (
                 <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 0", borderBottom:i<3?"1px solid "+C.border:"none" }}>
                   <div>
