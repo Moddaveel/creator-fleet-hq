@@ -119,7 +119,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               </div>
             ) : (
               publishQueue.map(item => (
-                <div key={item.pub_id} style={{ background:C.card2, border:"1px solid "+(selectedPubId===item.pub_id?C.blue+"66":C.border), borderRadius:12, padding:16, marginBottom:12 }}>
+                <div key={item.pub_id} style={{ background:C.card2, border:"1px solid "+(selectedPubId===item.pub_id?C.blue+"66":C.border), borderRadius:12, padding:16, marginBottom:12, overflow:"hidden" }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
                     <div>
                       <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{item.title}</div>
@@ -133,7 +133,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                   {item.platforms.map((p, pi) => {
                     const meta = PLATFORM_META[p.platform] || { icon:"📱", label:p.platform, color:C.muted };
                     return (
-                      <div key={pi} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 10px", background:C.bg, border:"1px solid "+C.border, borderRadius:8, marginBottom:6 }}>
+                      <div key={pi} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 10px", background:meta.color+"0d", border:"1px solid "+meta.color+"44", borderRadius:8, marginBottom:6 }}>
                         <div style={{ width:28, textAlign:"center", fontSize:15 }}>{meta.icon}</div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontSize:11, fontWeight:700, color:meta.color, marginBottom:2 }}>{meta.label}</div>
