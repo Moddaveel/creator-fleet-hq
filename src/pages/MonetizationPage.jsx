@@ -40,9 +40,7 @@ export default function MonetizationPage() {
           <div style={{ fontSize:17, fontWeight:800 }}>Monetization & Partnerships</div>
           <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{deals.length} active deals · Click a deal to expand</div>
         </div>
-        <div style={{ display:"flex", gap:6 }}>
-          {MONO_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
-        </div>
+        
       </div>
 
       {/* Stat cards */}
