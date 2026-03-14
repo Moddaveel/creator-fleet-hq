@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { APPROVAL_AGENTS } from "../data/agents";
-import AgentButton from "../components/AgentButton";
-import AgentChat from "../components/AgentChat";
-import { APPROVAL_AGENTS } from "../data/agents";
-import AgentButton from "../components/AgentButton";
-import AgentChat from "../components/AgentChat";
 import { C, pColor, pIcon, dColor } from "../constants";
+import { APPROVAL_AGENTS } from "../data/agents";
 import Chip from "../components/Chip";
 import Countdown from "../components/Countdown";
 import RejectModal from "../components/RejectModal";
 import ApproveScheduleModal from "../components/ApproveScheduleModal";
+import AgentButton from "../components/AgentButton";
+import AgentChat from "../components/AgentChat";
 
-const pBg  = p => ({urgent:'#1a0808', high:'#160d04', normal:'#120818', low:'#0e0e12'}[p] || '#12121a');
+const pBg = p => ({urgent:'#1a0808', high:'#160d04', normal:'#120818', low:'#0e0e12'}[p] || '#12121a');
 const pBorder = p => ({urgent:'rgba(239,68,68,0.35)', high:'rgba(249,115,22,0.35)', normal:'rgba(168,85,247,0.35)', low:'rgba(100,116,139,0.2)'}[p] || C.border);
 
 export default function ApprovalsPage({ items, setItems, toast, onApproveAndSchedule }) {
@@ -22,14 +19,13 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
   const [showStats, setShowStats] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [chatAgent, setChatAgent] = useState(null);
-  const [chatAgent, setChatAgent] = useState(null);
 
   const addLog = e => setLog(l => [{ ...e, ts: new Date().toLocaleTimeString() }, ...l]);
 
   const approve = id => {
     const item = items.find(x => x.id === id);
     setItems(i => i.filter(x => x.id !== id));
-    toast("✓ \"" + item.title + "\" approved — Ralph Loop recorded", C.green);
+    toast("Approved — Ralph Loop recorded", C.green);
     addLog({ action:"APPROVED", title:item.title, note:"No schedule set" });
   };
 
@@ -37,7 +33,7 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
     const item = items.find(x => x.id === id);
     setItems(i => i.filter(x => x.id !== id));
     setRejectTarget(null);
-    toast("✕ \"" + item.title + "\" rejected — " + reason.slice(0,40), C.red);
+    toast("Rejected — " + reason.slice(0,40), C.red);
     addLog({ action:"REJECTED", title:item.title, note:reason });
   };
 
@@ -46,7 +42,7 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
     setSchedTarget(null);
     onApproveAndSchedule(item, platforms);
     addLog({ action:"APPROVED+SCHEDULED", title:item.title, note:platforms.filter(p=>p.scheduledTime).length+" platforms scheduled" });
-    toast("✓ \"" + item.title + "\" approved + queued to Publishing", C.blue);
+    toast("Approved + queued to Publishing", C.blue);
   };
 
   const publishable = item => ["Clip Bundle","YouTube Upload"].includes(item.type);
@@ -55,21 +51,14 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
   const btnStyle = (active, color) => ({
     background: active ? color+"22" : "transparent",
     border: "1px solid " + (active ? color+"66" : "rgba(255,255,255,0.1)"),
-    borderRadius: 8,
-    padding: "5px 12px",
+    borderRadius: 8, padding: "5px 12px",
     color: active ? color : C.muted,
-    fontSize: 12,
-    fontWeight: 700,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
+    fontSize: 12, fontWeight: 700, cursor: "pointer",
+    display: "flex", alignItems: "center", gap: 6,
   });
 
   return (
     <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
-
-      {/* Header row */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
         <div>
           <div style={{ fontSize:17, fontWeight:800 }}>Approval Queue</div>
@@ -87,7 +76,6 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         </div>
       </div>
 
-      {/* Queue Stats panel */}
       {showStats && (
         <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:12, padding:16, marginBottom:12, display:"flex", gap:12, flexWrap:"wrap" }}>
           {["urgent","high","normal","low"].map(p => {
@@ -105,7 +93,6 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         </div>
       )}
 
-      {/* Decision Log panel */}
       {showLog && (
         <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:12, padding:16, marginBottom:12 }}>
           {log.length === 0 && <div style={{ fontSize:12, color:C.muted }}>No decisions yet this session.</div>}
@@ -122,15 +109,9 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         </div>
       )}
 
-      {/* Search */}
-      <input
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        placeholder="Search..."
-        style={{ width:"100%", background:C.card, border:"1px solid "+C.border, borderRadius:9, padding:"9px 14px", color:C.text, fontSize:13, boxSizing:"border-box", outline:"none", marginBottom:20 }}
-      />
+      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..."
+        style={{ width:"100%", background:C.card, border:"1px solid "+C.border, borderRadius:9, padding:"9px 14px", color:C.text, fontSize:13, boxSizing:"border-box", outline:"none", marginBottom:20 }} />
 
-      {/* Queue */}
       {filtered.length === 0 && (
         <div style={{ textAlign:"center", padding:"60px 0" }}>
           <div style={{ fontSize:36, marginBottom:12 }}>✅</div>
@@ -144,7 +125,10 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         const labels = { urgent:"🔴 Urgent", high:"🟠 High Priority", normal:"🟣 Normal", low:"⚪ Low" };
         return (
           <div key={p} style={{ marginBottom:24, border:"2px solid "+pColor(p)+"99", borderRadius:14, padding:16, background:pColor(p)+"12" }}>
-            <div style={{ fontSize:11, fontWeight:700, color:pColor(p), letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}><div style={{ flex:1 }}>{labels[p]+" ("+grp.length+")"}</div><div style={{ height:1, background:pColor(p)+"33", flex:20 }} /></div>
+            <div style={{ fontSize:11, fontWeight:700, color:pColor(p), letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+              <div style={{ flex:1 }}>{labels[p]+" ("+grp.length+")"}</div>
+              <div style={{ height:1, background:pColor(p)+"33", flex:20 }} />
+            </div>
             {grp.map(item => (
               <div key={item.id} style={{ background:pBg(p), border:"1px solid "+pBorder(p), borderRadius:12, padding:16, marginBottom:10 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
@@ -186,21 +170,6 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         );
       })}
 
-            {/* Agent section — bottom */}
-      <div style={{ marginTop:32 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
-          <div style={{ background:"rgba(168,85,247,0.15)", border:"1px solid rgba(168,85,247,0.35)", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:"#a855f7" }}>Approval Agents</div>
-          <div style={{ fontSize:12, color:"#64748b" }}>Hover to hear from them — click to open a session</div>
-        </div>
-        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
-          {APPROVAL_AGENTS.map(a => (
-            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
-          ))}
-        </div>
-      </div>
-
-      {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
-            {/* Agent section — bottom */}
       <div style={{ marginTop:32 }}>
         <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
           <div style={{ background:"rgba(168,85,247,0.15)", border:"1px solid rgba(168,85,247,0.35)", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:"#a855f7" }}>Approval Agents</div>
