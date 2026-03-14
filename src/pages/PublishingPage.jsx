@@ -359,6 +359,12 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <span style={{ fontSize:11, color:C.muted }}>Today</span>
               </div>
             </div>
+            <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:14, padding:20, marginBottom:16 }}>
+              <MonthCalendar queue={publishQueue} year={calYear} month={calMonth} />
+            </div>
+
+            {/* Best times to post — below the calendar */}
+            <div style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12 }}>Best Times to Post</div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
               {Object.entries(PLATFORM_META).map(([k,v]) => (
                 <div key={k} style={{ background:v.color+"0d", border:"1px solid "+v.color+"33", borderRadius:14, padding:16 }}>
@@ -376,9 +382,6 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                   <div style={{ marginTop:10, fontSize:10, color:C.muted, lineHeight:1.5 }}>{v.notes}</div>
                 </div>
               ))}
-            </div>
-            <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:14, padding:20 }}>
-              <MonthCalendar queue={publishQueue} year={calYear} month={calMonth} />
             </div>
           </div>
         )}
