@@ -209,8 +209,23 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
           <div style={{ background:"linear-gradient(135deg,"+C.purple+"33,"+C.neon+"22)", border:"1px solid "+C.purple+"44", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:C.purple }}>⚡ Command Staff</div>
           <div style={{ fontSize:12, color:C.muted }}>Hover to hear from them — click to open a session</div>
         </div>
-        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
-          {EO_AGENTS.map(a => (
+        <div style={{ background:'#12121a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, overflow:'hidden' }}>
+        {EO_AGENTS.filter(a => a.codename).map(a => (
+          <div key={a.id} style={{ padding:'20px 28px', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', gap:20 }}>
+            <button onClick={() => setChatAgent(a)} style={{ background:a.color+'22', border:'2px solid '+a.color+'66', borderRadius:18, width:72, height:72, fontSize:34, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow:'0 0 24px '+a.color+'33' }}>{a.icon}</button>
+            <div style={{ flex:1 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
+                <div style={{ fontSize:20, fontWeight:900, color:a.color, letterSpacing:'-0.02em' }}>{a.codename}</div>
+                <div style={{ background:a.color+'22', border:'1px solid '+a.color+'44', borderRadius:5, padding:'2px 8px', fontSize:10, fontWeight:800, color:a.color, letterSpacing:'0.06em', textTransform:'uppercase' }}>Dept Head</div>
+              </div>
+              <div style={{ fontSize:12, fontWeight:700, color:a.color+'bb' }}>{a.name}</div>
+              <div style={{ fontSize:11, color:'#64748b', marginTop:2 }}>{a.role}</div>
+            </div>
+            <button onClick={() => setChatAgent(a)} style={{ background:a.color+'15', border:'1px solid '+a.color+'44', borderRadius:9, padding:'10px 20px', color:a.color, fontSize:12, fontWeight:800, cursor:'pointer', flexShrink:0 }}>Open Session</button>
+          </div>
+        ))}
+        <div style={{ display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center', padding:'24px' }}>
+          {EO_AGENTS.filter(a => a.codename === undefined).map(a => (
             <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
           ))}
         </div>
