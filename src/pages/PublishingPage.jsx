@@ -341,20 +341,30 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, padding:"4px 12px", fontSize:12, color:C.muted }}>{scheduledCount} posts scheduled</div>
             </div>
 
-            {/* Platforms legend — very top */}
-            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16, padding:"12px 16px", background:C.card, border:"1px solid "+C.border, borderRadius:12 }}>
-              <span style={{ fontSize:11, color:C.muted, fontWeight:700, marginRight:4, alignSelf:"center" }}>PLATFORMS</span>
-              {Object.entries(PLATFORM_META).map(([k,v]) => (
-                <div key={k} style={{ display:"flex", alignItems:"center", gap:6, background:v.color+"15", border:"1px solid "+v.color+"33", borderRadius:7, padding:"4px 10px" }}>
-                  <span style={{ fontSize:13 }}>{v.icon}</span>
-                  <span style={{ fontSize:11, fontWeight:700, color:v.color }}>{v.label}</span>
+            {/* Platforms legend — the 4 platforms you're on */}
+            {(() => {
+              const PLATFORMS = [
+                { label:"Twitch",    icon:"🟣", color:"#9146ff" },
+                { label:"YouTube",   icon:"🔴", color:"#FF0000" },
+                { label:"Instagram", icon:"🟠", color:"#f97316" },
+                { label:"TikTok",    icon:"⚫", color:"#69c9d0" },
+              ];
+              return (
+                <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16, padding:"12px 16px", background:C.card, border:"1px solid "+C.border, borderRadius:12 }}>
+                  <span style={{ fontSize:11, color:C.muted, fontWeight:700, marginRight:4, alignSelf:"center" }}>PLATFORMS</span>
+                  {PLATFORMS.map(p => (
+                    <div key={p.label} style={{ display:"flex", alignItems:"center", gap:6, background:p.color+"15", border:"1px solid "+p.color+"44", borderRadius:7, padding:"4px 10px" }}>
+                      <span style={{ fontSize:13 }}>{p.icon}</span>
+                      <span style={{ fontSize:11, fontWeight:700, color:p.color }}>{p.label}</span>
+                    </div>
+                  ))}
+                  <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:5 }}>
+                    <div style={{ width:12, height:12, borderRadius:6, background:C.purple }} />
+                    <span style={{ fontSize:11, color:C.muted }}>Today</span>
+                  </div>
                 </div>
-              ))}
-              <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:5 }}>
-                <div style={{ width:12, height:12, borderRadius:6, background:C.purple }} />
-                <span style={{ fontSize:11, color:C.muted }}>Today</span>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Month navigator — directly above calendar */}
             <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:16, marginBottom:12, padding:"12px 0", background:C.card, border:"1px solid "+C.border, borderRadius:14 }}>
