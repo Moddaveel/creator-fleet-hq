@@ -8,7 +8,7 @@ import AgentChat from "../components/AgentChat";
 import AgentButton from "../components/AgentButton";
 
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const DAY_NAMES   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 const RALPH_LOOP = {
   status: "open",
@@ -57,7 +57,7 @@ function RalphLoopStatus() {
 }
 
 function MonthCalendar({ queue, year, month }) {
-  const firstDay   = new Date(year, month, 1).getDay();
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const today = new Date();
   const getPostsForDay = (day) => {
@@ -83,8 +83,8 @@ function MonthCalendar({ queue, year, month }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
         {cells.map((day, i) => {
           if (!day) return <div key={"e"+i} style={{ minHeight:90, borderRadius:10 }} />;
-          const posts  = getPostsForDay(day);
-          const isTod  = isToday(day);
+          const posts = getPostsForDay(day);
+          const isTod = isToday(day);
           return (
             <div key={day} style={{ minHeight:90, borderRadius:10, padding:8, background:isTod?C.purple+"18":C.card, border:"1px solid "+(isTod?C.purple+"66":C.border), display:"flex", flexDirection:"column", gap:3 }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
@@ -110,16 +110,21 @@ function MonthCalendar({ queue, year, month }) {
 
 const STAT_FILTERS = [
   { key:"all",       label:"Total Posts", icon:"📤", accent:"#a855f7", bg:"#18061a", border:"rgba(168,85,247,0.45)" },
-  { key:"scheduled", label:"Scheduled",  icon:"📅", accent:"#3b82f6", bg:"#080e1a", border:"rgba(59,130,246,0.45)"  },
-  { key:"draft",     label:"Drafts",     icon:"✏️",  accent:"#eab308", bg:"#16120a", border:"rgba(234,179,8,0.45)"   },
-  { key:"published", label:"Published",  icon:"✅", accent:"#22c55e", bg:"#08160e", border:"rgba(34,197,94,0.45)"   },
+  { key:"scheduled", label:"Scheduled",   icon:"📅", accent:"#3b82f6", bg:"#080e1a", border:"rgba(59,130,246,0.45)" },
+  { key:"draft",     label:"Drafts",      icon:"✏️", accent:"#eab308", bg:"#16120a", border:"rgba(234,179,8,0.45)" },
+  { key:"published", label:"Published",   icon:"✅", accent:"#22c55e", bg:"#08160e", border:"rgba(34,197,94,0.45)" },
 ];
 
 const statusStyles = {
   published: { color:"#22c55e", bg:"rgba(34,197,94,0.12)",  border:"rgba(34,197,94,0.3)",  label:"Published" },
   scheduled: { color:"#3b82f6", bg:"rgba(59,130,246,0.12)", border:"rgba(59,130,246,0.3)", label:"Scheduled" },
-  draft:     { color:"#eab308", bg:"rgba(234,179,8,0.12)",  border:"rgba(234,179,8,0.3)",  label:"Draft"     },
+  draft:     { color:"#eab308", bg:"rgba(234,179,8,0.12)",  border:"rgba(234,179,8,0.3)",  label:"Draft" },
 };
+
+const SUBPAGES = [
+  { id:"queue",    label:"Queue",    icon:"📤" },
+  { id:"calendar", label:"Calendar", icon:"📅" },
+];
 
 export default function PublishingPage({ publishQueue, setPublishQueue, toast }) {
   const [subpage, setSubpage]         = useState("queue");
@@ -127,14 +132,8 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
   const [expandedIds, setExpandedIds] = useState(new Set());
   const [filter, setFilter]           = useState("all");
   const today = new Date();
-  const [calYear,  setCalYear]  = useState(today.getFullYear());
+  const [calYear, setCalYear]   = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
-
-  const SUBPAGES = [
-    {id:"queue",    label:"Queue",    icon:"📤"},
-    {id:"calendar", label:"Calendar", icon:"📅"},
-    {id:"agents",   label:"Agents",   icon:"🤖"},
-  ];
 
   const toggleExpand = id => setExpandedIds(prev => {
     const next = new Set(prev);
@@ -154,36 +153,31 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
   const publishedCount = publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="published").length,0);
   const draftCount     = publishQueue.reduce((a,i)=>a+i.platforms.filter(p=>p.status==="draft").length,0);
   const totalPosts     = publishQueue.reduce((a,i)=>a+i.platforms.length,0);
-  const statVals = { all:totalPosts, scheduled:scheduledCount, draft:draftCount, published:publishedCount };
+  const statVals       = { all:totalPosts, scheduled:scheduledCount, draft:draftCount, published:publishedCount };
 
   const filteredQueue = filter === "all"
     ? publishQueue
-    : publishQueue.map(item => ({
-        ...item,
-        platforms: item.platforms.filter(p => p.status === filter)
-      })).filter(item => item.platforms.length > 0);
+    : publishQueue
+        .map(item => ({ ...item, platforms: item.platforms.filter(p => p.status === filter) }))
+        .filter(item => item.platforms.length > 0);
 
   const prevMonth = () => { if (calMonth===0){setCalMonth(11);setCalYear(y=>y-1);}else setCalMonth(m=>m-1); };
   const nextMonth = () => { if (calMonth===11){setCalMonth(0);setCalYear(y=>y+1);}else setCalMonth(m=>m+1); };
 
-  const pubDept = PUB_AGENTS.find(a => a.id === "director");
+  const pubDept    = PUB_AGENTS.find(a => a.id === "director");
   const specialists = PUB_AGENTS.filter(a => a.id !== "director");
 
   return (
     <div style={{ height:"calc(100vh - 112px)", display:"flex", flexDirection:"column" }}>
 
-      {/* Sub-nav */}
+      {/* Sub-nav: Queue | Calendar only */}
       <div style={{ background:"#1a1025", borderBottom:"1px solid "+C.border, padding:"0 24px", display:"flex", gap:2, alignItems:"center", flexShrink:0 }}>
         {SUBPAGES.map(sp => (
-          <button key={sp.id} onClick={() => setSubpage(sp.id)}
-            style={{ background:subpage===sp.id?C.blue+"22":"transparent", border:"none", borderBottom:"2px solid "+(subpage===sp.id?C.blue:"transparent"), color:subpage===sp.id?C.blue:C.muted, padding:"11px 16px", fontSize:12, fontWeight:subpage===sp.id?700:400, cursor:"pointer", display:"flex", gap:6, alignItems:"center", transition:"all 0.15s" }}>
+          <button key={sp.id} onClick={() => setSubpage(sp.id)} style={{ background:subpage===sp.id?C.blue+"22":"transparent", border:"none", borderBottom:"2px solid "+(subpage===sp.id?C.blue:"transparent"), color:subpage===sp.id?C.blue:C.muted, padding:"11px 16px", fontSize:12, fontWeight:subpage===sp.id?700:400, cursor:"pointer", display:"flex", gap:6, alignItems:"center", transition:"all 0.15s" }}>
             <span>{sp.icon}</span><span>{sp.label}</span>
-            {sp.id==="queue"&&draftCount>0&&<span style={{ background:C.yellow, color:"#000", borderRadius:10, padding:"1px 6px", fontSize:10, fontWeight:800 }}>{draftCount}</span>}
+            {sp.id==="queue" && draftCount>0 && <span style={{ background:C.yellow, color:"#000", borderRadius:10, padding:"1px 6px", fontSize:10, fontWeight:800 }}>{draftCount}</span>}
           </button>
         ))}
-        <div style={{ marginLeft:"auto", display:"flex", gap:6, alignItems:"center" }}>
-          {PUB_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
-        </div>
       </div>
 
       <div style={{ flex:1, overflowY:"auto" }}>
@@ -195,12 +189,12 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               <div style={{ fontSize:17, fontWeight:800 }}>Publishing Queue</div>
               <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{totalPosts} total posts · {scheduledCount} scheduled · {draftCount} drafts</div>
             </div>
+
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:24 }}>
               {STAT_FILTERS.map(s => {
                 const active = filter === s.key;
                 return (
-                  <div key={s.key} onClick={() => setFilter(s.key)}
-                    style={{ background:s.bg, border:"1px solid "+(active?s.accent:s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform:active?"translateY(-1px)":"none", boxShadow:active?"0 4px 20px "+s.accent+"22":"none" }}>
+                  <div key={s.key} onClick={() => setFilter(s.key)} style={{ background:s.bg, border:"1px solid "+(active?s.accent:s.border), borderRadius:14, padding:18, cursor:"pointer", transition:"all 0.15s", transform:active?"translateY(-1px)":"none", boxShadow:active?"0 4px 20px "+s.accent+"22":"none" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
                       <div style={{ width:34, height:34, background:s.accent+"20", border:"1px solid "+s.accent+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>{s.icon}</div>
                       <div style={{ fontSize:11, fontWeight:700, color:active?s.accent:C.muted }}>{s.label}</div>
@@ -212,6 +206,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 );
               })}
             </div>
+
             {filter !== "all" && (
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16, padding:"8px 14px", background:C.card, border:"1px solid "+C.border, borderRadius:9 }}>
                 <span style={{ fontSize:12, color:C.muted }}>Showing:</span>
@@ -220,6 +215,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <button onClick={() => setFilter("all")} style={{ marginLeft:"auto", background:"transparent", border:"1px solid "+C.border, borderRadius:6, padding:"2px 10px", color:C.muted, fontSize:11, cursor:"pointer" }}>Clear</button>
               </div>
             )}
+
             {filteredQueue.length === 0 ? (
               <div style={{ textAlign:"center", padding:"80px 0" }}>
                 <div style={{ fontSize:48, marginBottom:16 }}>📤</div>
@@ -233,8 +229,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 const progress   = Math.round((publishedN/item.platforms.length)*100);
                 return (
                   <div key={item.pub_id} style={{ background:C.card, border:"1px solid "+(isSelected?C.blue+"66":C.border), borderRadius:14, marginBottom:14, overflow:"hidden" }}>
-                    <div onClick={() => toggleExpand(item.pub_id)}
-                      style={{ padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", background:isSelected?C.blue+"08":"transparent" }}>
+                    <div onClick={() => toggleExpand(item.pub_id)} style={{ padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", background:isSelected?C.blue+"08":"transparent" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:14 }}>
                         <div style={{ width:42, height:42, background:C.purple+"20", border:"1px solid "+C.purple+"44", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
                           {item.type==="Clip Bundle"?"🎬":item.type==="YouTube Upload"?"▶":"📄"}
@@ -276,7 +271,9 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                                 <div style={{ fontSize:11,color:C.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{p.hook||p.caption||"No copy set"}</div>
                               </div>
                               <div style={{ flexShrink:0,textAlign:"right",minWidth:90 }}>
-                                {p.scheduledTime?<div style={{ fontSize:11,color:C.blue,fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>:<span style={{ fontSize:10,color:C.muted }}>Not scheduled</span>}
+                                {p.scheduledTime
+                                  ? <div style={{ fontSize:11,color:C.blue,fontWeight:600 }}>{new Date(p.scheduledTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>
+                                  : <span style={{ fontSize:10,color:C.muted }}>Not scheduled</span>}
                               </div>
                               <div style={{ flexShrink:0 }}>
                                 {p.status==="published"
@@ -294,6 +291,44 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 );
               })
             )}
+
+            {/* Ralph Loop */}
+            <div style={{ marginTop:32 }}>
+              <RalphLoopStatus />
+            </div>
+
+            {/* SLA targets */}
+            <Card>
+              <Sect>Publishing SLA — Targets</Sect>
+              {[
+                {metric:"Approval to Queue",   target:"less than 5 min",  note:"Approve + Schedule is instant",        color:C.green},
+                {metric:"Queue to Scheduled",  target:"less than 30 min", note:"Scheduling Agent recommends time",     color:C.green},
+                {metric:"Approval to Publish", target:"less than 2 hrs",  note:"Currently 4.2 hrs — gap to close",    color:C.yellow},
+                {metric:"Stream to Published", target:"less than 48 hrs", note:"Currently 3.2 days — primary target", color:C.red},
+              ].map((s,i) => (
+                <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 0", borderBottom:i<3?"1px solid "+C.border:"none" }}>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:600 }}>{s.metric}</div>
+                    <div style={{ fontSize:10, color:C.muted, marginTop:2 }}>{s.note}</div>
+                  </div>
+                  <div style={{ background:s.color+"15", border:"1px solid "+s.color+"33", borderRadius:7, padding:"4px 12px", fontSize:11, fontWeight:700, color:s.color }}>{s.target}</div>
+                </div>
+              ))}
+            </Card>
+
+            {/* Agent large cards — bottom of page, consistent with all other tabs */}
+            <div style={{ marginTop:32, marginBottom:24 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
+                <div style={{ background:"rgba(59,130,246,0.15)", border:"1px solid rgba(59,130,246,0.35)", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:"#3b82f6" }}>Publishing Agents</div>
+                <div style={{ fontSize:12, color:"#64748b" }}>Hover to hear from them — click to open a session</div>
+              </div>
+              <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+                {PUB_AGENTS.map(a => (
+                  <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -348,83 +383,6 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
           </div>
         )}
 
-        {/* AGENTS */}
-        {subpage==="agents" && (
-          <div style={{ padding:24 }}>
-            <div style={{ marginBottom:20 }}>
-              <div style={{ fontSize:17, fontWeight:800, marginBottom:4 }}>Publishing Agents</div>
-              <div style={{ fontSize:13, color:C.muted }}>The last mile — scheduling to analytics.</div>
-            </div>
-
-            <RalphLoopStatus />
-
-            {pubDept && (
-              <div onClick={() => setChatAgent(pubDept)}
-                style={{ background:"linear-gradient(135deg,rgba(59,130,246,0.12),rgba(59,130,246,0.06))", border:"2px solid rgba(59,130,246,0.5)", borderRadius:16, padding:22, cursor:"pointer", marginBottom:20, display:"flex", alignItems:"center", gap:18 }}>
-                <div style={{ width:64, height:64, background:"rgba(59,130,246,0.2)", border:"2px solid rgba(59,130,246,0.55)", borderRadius:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, flexShrink:0 }}>
-                  {pubDept.icon}
-                </div>
-                <div style={{ flex:1 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-                    <div style={{ fontSize:15, fontWeight:900, color:pubDept.color }}>{pubDept.name}</div>
-                    <div style={{ background:"rgba(59,130,246,0.2)", border:"1px solid rgba(59,130,246,0.4)", borderRadius:6, padding:"2px 8px", fontSize:10, fontWeight:800, color:pubDept.color }}>DEPT HEAD</div>
-                  </div>
-                  <div style={{ fontSize:12, color:C.muted, lineHeight:1.6 }}>{pubDept.role} — Owns the full publishing chain, coordinates all specialist agents, and closes the Ralph Loop back to Content Studio.</div>
-                </div>
-                <button style={{ background:"rgba(59,130,246,0.15)", border:"1px solid rgba(59,130,246,0.33)", borderRadius:9, padding:"10px 18px", color:pubDept.color, fontSize:12, fontWeight:700, cursor:"pointer", flexShrink:0 }}>Open Session →</button>
-              </div>
-            )}
-
-            <div style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12 }}>Specialist Agents</div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12, marginBottom:20 }}>
-              {specialists.map(a => (
-                <div key={a.id} onClick={() => setChatAgent(a)}
-                  style={{ background:a.color+"0d", border:"1px solid "+a.color+"33", borderRadius:14, padding:20, cursor:"pointer" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
-                    <div style={{ width:40, height:40, background:a.color+"22", border:"1px solid "+a.color+"44", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{a.icon}</div>
-                    <div>
-                      <div style={{ fontSize:13, fontWeight:800, color:a.color }}>{a.name}</div>
-                      <div style={{ fontSize:11, color:C.muted }}>{a.role}</div>
-                    </div>
-                  </div>
-                  <div style={{ borderTop:"1px solid "+a.color+"18", marginBottom:12 }} />
-                  <button style={{ width:"100%", background:a.color+"15", border:"1px solid "+a.color+"33", borderRadius:7, padding:"8px 0", color:a.color, fontSize:12, fontWeight:700, cursor:"pointer" }}>Open Session →</button>
-                </div>
-              ))}
-            </div>
-
-            {/* Agent large cards */}
-            <div style={{ marginTop:8, marginBottom:24 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
-                <div style={{ background:'rgba(59,130,246,0.15)', border:'1px solid rgba(59,130,246,0.35)', borderRadius:10, padding:'6px 16px', fontSize:13, fontWeight:800, color:'#3b82f6' }}>Publishing Agents</div>
-                <div style={{ fontSize:12, color:'#64748b' }}>Hover to hear from them — click to open a session</div>
-              </div>
-              <div style={{ display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center', padding:'24px', background:'#12121a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16 }}>
-                {PUB_AGENTS.map(a => (
-                  <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
-                ))}
-              </div>
-            </div>
-
-            <Card>
-              <Sect>Publishing SLA — Targets</Sect>
-              {[
-                {metric:"Approval to Queue",   target:"less than 5 min",  note:"Approve + Schedule is instant",        color:C.green},
-                {metric:"Queue to Scheduled",  target:"less than 30 min", note:"Scheduling Agent recommends time",     color:C.green},
-                {metric:"Approval to Publish", target:"less than 2 hrs",  note:"Currently 4.2 hrs — gap to close",    color:C.yellow},
-                {metric:"Stream to Published", target:"less than 48 hrs", note:"Currently 3.2 days — primary target", color:C.red},
-              ].map((s,i) => (
-                <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 0", borderBottom:i<3?"1px solid "+C.border:"none" }}>
-                  <div>
-                    <div style={{ fontSize:12, fontWeight:600 }}>{s.metric}</div>
-                    <div style={{ fontSize:10, color:C.muted, marginTop:2 }}>{s.note}</div>
-                  </div>
-                  <div style={{ background:s.color+"15", border:"1px solid "+s.color+"33", borderRadius:7, padding:"4px 12px", fontSize:11, fontWeight:700, color:s.color }}>{s.target}</div>
-                </div>
-              ))}
-            </Card>
-          </div>
-        )}
       </div>
 
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
