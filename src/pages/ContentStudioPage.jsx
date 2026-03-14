@@ -2,14 +2,13 @@ import { useState } from "react";
 import { C, momentColor } from "../constants";
 import { CS_AGENTS } from "../data/agents";
 import Chip from "../components/Chip";
-import AgentButton from "../components/AgentButton";
 import AgentChat from "../components/AgentChat";
 
 const PLATFORMS = [
-  { id:"youtube",         label:"YouTube",          icon:"▶",  accent:"#ff4444", bg:"#1a0a0a", border:"rgba(255,68,68,0.45)", keys:["youtube"],         description:"Long-form VODs & full stream uploads" },
-  { id:"youtube_shorts",  label:"YouTube Shorts",   icon:"▶",  accent:"#ff6b6b", bg:"#1a0c0c", border:"rgba(255,107,107,0.45)", keys:["youtube_shorts"],  description:"Vertical short clips · under 60s" },
-  { id:"tiktok",          label:"TikTok",           icon:"♪",  accent:"#69c9d0", bg:"#08161a", border:"rgba(105,201,208,0.45)", keys:["tiktok"],          description:"Short clips · hook in 2s · max 60s" },
-  { id:"instagram_reels", label:"Instagram Reels",  icon:"◈",  accent:"#f97316", bg:"#1a0e08", border:"rgba(249,115,22,0.45)", keys:["instagram_reels"], description:"Reels · first line is the hook · 6–10 hashtags" },
+  { id:"youtube",        label:"YouTube",        icon:"▶", accent:"#ff4444", bg:"#1a0a0a", border:"rgba(255,68,68,0.45)",    keys:["youtube"],        description:"Long-form VODs & full stream uploads" },
+  { id:"youtube_shorts", label:"YouTube Shorts", icon:"▶", accent:"#ff6b6b", bg:"#1a0c0c", border:"rgba(255,107,107,0.45)", keys:["youtube_shorts"], description:"Vertical short clips · under 60s" },
+  { id:"tiktok",         label:"TikTok",         icon:"♪", accent:"#69c9d0", bg:"#08161a", border:"rgba(105,201,208,0.45)", keys:["tiktok"],         description:"Short clips · hook in 2s · max 60s" },
+  { id:"instagram_reels",label:"Instagram Reels",icon:"◈", accent:"#f97316", bg:"#1a0e08", border:"rgba(249,115,22,0.45)",  keys:["instagram_reels"],description:"Reels · first line is the hook · 6–10 hashtags" },
 ];
 
 const STATUSES = [
@@ -96,7 +95,8 @@ export default function ContentStudioPage({ clips, setClips }) {
   const [processing, setProcessing] = useState(null);
 
   function handleDrop(e) {
-    e.preventDefault(); setDragging(false);
+    e.preventDefault();
+    setDragging(false);
     processVods(Array.from(e.dataTransfer?.files||[]));
   }
   function handleFileInput(e) { processVods(Array.from(e.target.files||[])); }
@@ -117,67 +117,89 @@ export default function ContentStudioPage({ clips, setClips }) {
     <div style={{ padding:24, maxWidth:1200, margin:"0 auto" }}>
 
       {/* Header */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
         <div>
           <div style={{ fontSize:17, fontWeight:800 }}>Content Studio</div>
-          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Drop any video into the Drop Zone — clips are auto-routed to each platform below</div>
-        </div>
-        <div style={{ display:"flex", gap:6 }}>
-          {CS_AGENTS.map(a => (
-            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />
-          ))}
+          <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Drop a VOD into the Drop Zone — clips are extracted and auto-routed to each platform below</div>
         </div>
       </div>
 
-      {/* Twitch VOD Drop Zone */}
-      <div style={{ background:"#18061a", border:"2px dashed "+(dragging?"#9146ff":"#9146ff44"), borderRadius:14, marginBottom:20, overflow:"hidden" }}>
-        {/* Twitch header strip */}
-        <div style={{ background:"#9146ff22", borderBottom:"1px solid #9146ff33", padding:"10px 20px", display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ width:28, height:28, background:"#9146ff", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>
-            🟣
+      {/* Agent row — labeled cards */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:10, marginBottom:24 }}>
+        {CS_AGENTS.map(a => (
+          <div key={a.id} onClick={() => setChatAgent(a)}
+            style={{ background:a.color+"0d", border:"1px solid "+a.color+"33", borderRadius:12, padding:"12px 14px", cursor:"pointer", display:"flex", alignItems:"center", gap:10, transition:"border 0.15s" }}>
+            <div style={{ width:34, height:34, background:a.color+"20", border:"1px solid "+a.color+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>
+              {a.icon}
+            </div>
+            <div style={{ minWidth:0 }}>
+              <div style={{ fontSize:11, fontWeight:800, color:a.color, marginBottom:2 }}>{a.name}</div>
+              <div style={{ fontSize:10, color:C.muted, lineHeight:1.4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.role}</div>
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize:13, fontWeight:800, color:"#9146ff" }}>Drop Zone</div>
-            <div style={{ fontSize:11, color:C.muted }}>Drop any video — clips are extracted and routed to each platform below</div>
+        ))}
+      </div>
+
+      {/* Drop Zone — primary action */}
+      <div style={{
+        background: dragging ? "#9146ff18" : "#18061a",
+        border: "2px dashed "+(dragging?"#9146ff":"#9146ff66"),
+        borderRadius:16, marginBottom:24, overflow:"hidden",
+        boxShadow: dragging ? "0 0 32px rgba(145,70,255,0.2)" : "none",
+        transition:"all 0.2s",
+      }}>
+        {/* Header strip */}
+        <div style={{ background:"#9146ff22", borderBottom:"1px solid #9146ff33", padding:"12px 24px", display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ width:36, height:36, background:"#9146ff", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>🟣</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:800, color:"#9146ff" }}>Twitch VOD Drop Zone</div>
+            <div style={{ fontSize:11, color:C.muted }}>Primary input — drop any stream VOD to extract and route clips</div>
           </div>
           {processing && (
-            <div style={{ marginLeft:"auto", fontSize:12, color:"#9146ff", fontWeight:600 }}>
-              ⚙️ Processing {processing}...
+            <div style={{ background:"#9146ff22", border:"1px solid #9146ff44", borderRadius:8, padding:"5px 12px", fontSize:12, color:"#9146ff", fontWeight:600 }}>
+              Processing {processing}...
             </div>
           )}
         </div>
 
-        {/* Drop area */}
+        {/* Drop target */}
         <div
           onDragOver={e=>{e.preventDefault();setDragging(true);}}
           onDragLeave={()=>setDragging(false)}
           onDrop={handleDrop}
           onClick={()=>document.getElementById("vod-input").click()}
-          style={{ padding:"28px 20px", textAlign:"center", cursor:"pointer", transition:"background 0.2s", background:dragging?"#9146ff11":"transparent" }}
+          style={{ padding:"44px 20px", textAlign:"center", cursor:"pointer" }}
         >
           <input id="vod-input" type="file" accept="video/*" multiple onChange={handleFileInput} style={{ display:"none" }} />
-          <div style={{ fontSize:32, marginBottom:8 }}>🎮</div>
-          <div style={{ fontWeight:700, fontSize:14, color:C.text, marginBottom:4 }}>Drag & drop your Twitch VOD</div>
-          <div style={{ fontSize:12, color:C.muted }}>or click to browse — MP4, MOV, AVI supported</div>
+          <div style={{ fontSize:44, marginBottom:12 }}>🎮</div>
+          <div style={{ fontWeight:800, fontSize:16, color:C.text, marginBottom:6 }}>Drag and drop your Twitch VOD here</div>
+          <div style={{ fontSize:12, color:C.muted, marginBottom:16 }}>or click to browse — MP4, MOV, AVI supported</div>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"#9146ff22", border:"1px solid #9146ff55", borderRadius:10, padding:"8px 20px" }}>
+            <span style={{ fontSize:13, color:"#9146ff", fontWeight:700 }}>Browse Files</span>
+          </div>
         </div>
 
-        {/* Deposited VODs list */}
+        {/* VOD list */}
         {vods.length > 0 && (
-          <div style={{ borderTop:"1px solid #9146ff22", padding:"12px 20px", display:"flex", flexDirection:"column", gap:8 }}>
+          <div style={{ borderTop:"1px solid #9146ff22", padding:"12px 24px", display:"flex", flexDirection:"column", gap:8 }}>
             {vods.map(v => (
-              <div key={v.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:"#9146ff0e", border:"1px solid #9146ff22", borderRadius:10, padding:"8px 14px" }}>
+              <div key={v.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:"#9146ff0e", border:"1px solid #9146ff22", borderRadius:10, padding:"10px 16px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                  <span style={{ fontSize:16 }}>🎥</span>
+                  <span style={{ fontSize:18 }}>🎥</span>
                   <div>
                     <div style={{ fontSize:13, fontWeight:600, color:C.text }}>{v.name}</div>
                     <div style={{ fontSize:11, color:C.muted }}>{v.size}</div>
                   </div>
                 </div>
                 {v.status==="processing"
-                  ? <span style={{ fontSize:11, color:"#9146ff", fontWeight:600 }}>⚙️ Processing...</span>
+                  ? <span style={{ fontSize:11, color:"#9146ff", fontWeight:600 }}>Processing...</span>
                   : <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ fontSize:11, color:"#22c55e", fontWeight:600 }}>✓ Routed to platforms</span>
-                      <span style={{ fontSize:13 }}>▶ ♪ ◈</span>
+                      <span style={{ fontSize:11, color:"#22c55e", fontWeight:600 }}>Routed to platforms</span>
+                      <div style={{ display:"flex", gap:4 }}>
+                        {PLATFORMS.map(p => (
+                          <div key={p.id} style={{ width:22, height:22, background:p.accent+"20", border:"1px solid "+p.accent+"44", borderRadius:5, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, color:p.accent }}>{p.icon}</div>
+                        ))}
+                      </div>
                     </div>
                 }
               </div>
