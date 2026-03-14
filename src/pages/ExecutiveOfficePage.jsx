@@ -226,6 +226,7 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
           })()}
         </div>
       </div>
+      </div>
 
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
     </div>

@@ -435,6 +435,7 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
             </>);
           })()}
         </div>
+      </div>
             </div>
           </div>
         )}
