@@ -15,7 +15,7 @@ const ALERT_STYLE = {
 const ALL_DEPARTMENTS = [
   {
     id:"executive",
-    label:"Command Center",
+    label:"Fleet Command",
     icon:"⚡",
     color:"#a855f7",
     nav:"executive",
