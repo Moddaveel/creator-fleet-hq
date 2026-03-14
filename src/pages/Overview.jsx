@@ -112,12 +112,17 @@ export default function Overview({ approvals, clips, publishQueue, navigateTo })
 
       {/* 1 — ALERTS */}
       {urgentApprovals.length > 0 && (
-        <div onClick={() => navigateTo("approvals")} style={{ marginBottom:20, background:C.red+"11", border:"1px solid "+C.red+"33", borderRadius:12, padding:14, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div>
-            <div style={{ fontWeight:700, color:C.red, marginBottom:2 }}>{"🔴 "+urgentApprovals.length+" Urgent Approvals Pending"}</div>
-            <div style={{ fontSize:12, color:C.muted }}>{urgentApprovals.map(a=>a.title).join(" · ")}</div>
+        <div onClick={() => navigateTo("approvals")} style={{ marginBottom:24, background:"linear-gradient(135deg,rgba(239,68,68,0.13),rgba(239,68,68,0.06))", border:"2px solid "+C.red+"66", borderRadius:14, padding:"18px 22px", cursor:"pointer", display:"flex", alignItems:"center", gap:18, boxShadow:"0 0 32px "+C.red+"22", transition:"all 0.15s" }}>
+          <div style={{ width:44, height:44, background:C.red+"22", border:"2px solid "+C.red+"55", borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0, boxShadow:"0 0 16px "+C.red+"44" }}>🚨</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:15, fontWeight:900, color:C.red, marginBottom:5, letterSpacing:"-0.01em" }}>{urgentApprovals.length+" Urgent Approval"+(urgentApprovals.length>1?"s":"")+" Pending"}</div>
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+              {urgentApprovals.map(a => (
+                <div key={a.id} style={{ background:C.red+"15", border:"1px solid "+C.red+"33", borderRadius:6, padding:"2px 8px", fontSize:11, fontWeight:600, color:C.red+"cc" }}>{a.title}</div>
+              ))}
+            </div>
           </div>
-          <span style={{ color:C.red }}>→</span>
+          <div style={{ background:C.red+"22", border:"1px solid "+C.red+"44", borderRadius:9, padding:"8px 16px", fontSize:12, fontWeight:800, color:C.red, flexShrink:0 }}>Review Now →</div>
         </div>
       )}
 
