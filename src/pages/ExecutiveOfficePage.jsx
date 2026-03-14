@@ -209,10 +209,21 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
           <div style={{ background:"linear-gradient(135deg,"+C.purple+"33,"+C.neon+"22)", border:"1px solid "+C.purple+"44", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:C.purple }}>⚡ Command Staff</div>
           <div style={{ fontSize:12, color:C.muted }}>Hover to hear from them — click to open a session</div>
         </div>
-        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
-          {EO_AGENTS.map(a => (
-            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
-          ))}
+        <div style={{ display:"flex", flexDirection:"column", gap:32, padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+          {(() => {
+            const head = EO_AGENTS.find(a => a.id === "cosa");
+            const rest = EO_AGENTS.filter(a => a.id !== "cosa");
+            return (<>
+              {head && (
+                <div style={{ display:"flex", justifyContent:"center", paddingBottom:24, borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
+                  <AgentButton agent={head} onClick={() => setChatAgent(head)} large />
+                </div>
+              )}
+              <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center" }}>
+                {rest.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+              </div>
+            </>);
+          })()}
         </div>
       </div>
 
