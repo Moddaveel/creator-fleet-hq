@@ -166,8 +166,22 @@ export default function ContentStudioPage({ clips, setClips }) {
           <div style={{ background:"rgba(168,85,247,0.15)", border:"1px solid rgba(168,85,247,0.35)", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:"#a855f7" }}>Studio Agents</div>
           <div style={{ fontSize:12, color:"#64748b" }}>Hover to hear from them — click to open a session</div>
         </div>
-        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
-          {CS_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+        <div style={{ display:"flex", flexDirection:"column", gap:32, padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+          {/* Dept Head - featured */}
+          {(() => {
+            const head = CS_AGENTS.find(a => a.id === "director");
+            const specialists = CS_AGENTS.filter(a => a.id !== "director");
+            return (<>
+              {head && (
+                <div style={{ display:"flex", justifyContent:"center", paddingBottom:24, borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
+                  <AgentButton agent={head} onClick={() => setChatAgent(a)} large />
+                </div>
+              )}
+              <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center" }}>
+                {specialists.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+              </div>
+            </>);
+          })()}
         </div>
       </div>
 
