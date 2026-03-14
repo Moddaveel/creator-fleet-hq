@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { APPROVAL_AGENTS } from "../data/agents";
+import AgentButton from "../components/AgentButton";
+import AgentChat from "../components/AgentChat";
 import { C, pColor, pIcon, dColor } from "../constants";
 import Chip from "../components/Chip";
 import Countdown from "../components/Countdown";
@@ -15,6 +18,7 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
   const [log, setLog] = useState([]);
   const [showStats, setShowStats] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [chatAgent, setChatAgent] = useState(null);
 
   const addLog = e => setLog(l => [{ ...e, ts: new Date().toLocaleTimeString() }, ...l]);
 
@@ -178,6 +182,20 @@ export default function ApprovalsPage({ items, setItems, toast, onApproveAndSche
         );
       })}
 
+            {/* Agent section — bottom */}
+      <div style={{ marginTop:32 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
+          <div style={{ background:"rgba(168,85,247,0.15)", border:"1px solid rgba(168,85,247,0.35)", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:"#a855f7" }}>Approval Agents</div>
+          <div style={{ fontSize:12, color:"#64748b" }}>Hover to hear from them — click to open a session</div>
+        </div>
+        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+          {APPROVAL_AGENTS.map(a => (
+            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
+          ))}
+        </div>
+      </div>
+
+      {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
       {schedTarget && <ApproveScheduleModal item={schedTarget} onConfirm={platforms => handleApproveSchedule(schedTarget, platforms)} onCancel={() => setSchedTarget(null)} />}
       {rejectTarget && <RejectModal item={rejectTarget} onConfirm={r => reject(rejectTarget.id, r)} onCancel={() => setRejectTarget(null)} />}
     </div>

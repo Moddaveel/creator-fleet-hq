@@ -3,6 +3,7 @@ import { C, momentColor } from "../constants";
 import { CS_AGENTS } from "../data/agents";
 import Chip from "../components/Chip";
 import AgentChat from "../components/AgentChat";
+import AgentButton from "../components/AgentButton";
 
 const PLATFORMS = [
   { id:"youtube",        label:"YouTube",        icon:"▶", accent:"#ff4444", bg:"#1a0a0a", border:"rgba(255,68,68,0.45)",    keys:["youtube"],        description:"Long-form VODs & full stream uploads" },
@@ -124,21 +125,7 @@ export default function ContentStudioPage({ clips, setClips }) {
         </div>
       </div>
 
-      {/* Agent row — labeled cards */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:10, marginBottom:24 }}>
-        {CS_AGENTS.map(a => (
-          <div key={a.id} onClick={() => setChatAgent(a)}
-            style={{ background:a.color+"0d", border:"1px solid "+a.color+"33", borderRadius:12, padding:"12px 14px", cursor:"pointer", display:"flex", alignItems:"center", gap:10, transition:"border 0.15s" }}>
-            <div style={{ width:34, height:34, background:a.color+"20", border:"1px solid "+a.color+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>
-              {a.icon}
-            </div>
-            <div style={{ minWidth:0 }}>
-              <div style={{ fontSize:11, fontWeight:800, color:a.color, marginBottom:2 }}>{a.name}</div>
-              <div style={{ fontSize:10, color:C.muted, lineHeight:1.4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.role}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+
 
       {/* Drop Zone — primary action */}
       <div style={{
@@ -210,6 +197,19 @@ export default function ContentStudioPage({ clips, setClips }) {
 
       {/* Platform Sections */}
       {PLATFORMS.map(p => <PlatformSection key={p.id} platform={p} clips={clips} />)}
+
+      {/* Agent section — bottom */}
+      <div style={{ marginTop:32 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
+          <div style={{ background:"rgba(168,85,247,0.15)", border:"1px solid rgba(168,85,247,0.35)", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:"#a855f7" }}>Studio Agents</div>
+          <div style={{ fontSize:12, color:"#64748b" }}>Hover to hear from them — click to open a session</div>
+        </div>
+        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+          {CS_AGENTS.map(a => (
+            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
+          ))}
+        </div>
+      </div>
 
       {chatAgent && <AgentChat agent={chatAgent} onClose={()=>setChatAgent(null)} />}
     </div>
