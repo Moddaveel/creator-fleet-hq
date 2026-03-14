@@ -419,23 +419,9 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <div style={{ background:C.purple+"22", border:"1px solid "+C.purple+"44", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:C.purple }}>Publishing Agents</div>
                 <div style={{ fontSize:12, color:C.muted }}>Hover to hear from them - click to open a session</div>
               </div>
-              <div style={{ display:"flex", flexDirection:"column", gap:32, padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
-          {(() => {
-            const head = PUB_AGENTS.find(a => a.id === "director");
-            const rest = PUB_AGENTS.filter(a => a.id !== "director");
-            return (<>
-              {head && (
-                <div style={{ display:"flex", justifyContent:"center", paddingBottom:24, borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
-                  <AgentButton agent={head} onClick={() => setChatAgent(head)} large />
-                </div>
-              )}
-              <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center" }}>
-                {rest.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+              <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+                {PUB_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={()=>setChatAgent(a)} large />)}
               </div>
-            </>);
-          })()}
-        </div>
-      </div>
             </div>
           </div>
         )}
