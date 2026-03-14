@@ -11,12 +11,6 @@ const ALERT_STYLE = {
   info:    { icon:"ℹ️", color:"#3b82f6", bg:"rgba(59,130,246,0.1)",   border:"rgba(59,130,246,0.35)" },
 };
 
-const AGENT_META = {
-  cosa:     { bg:"#18061a", border:"rgba(168,85,247,0.45)" },
-  briefing: { bg:"#16120a", border:"rgba(234,179,8,0.45)"  },
-  router:   { bg:"#061614", border:"rgba(20,184,166,0.45)" },
-  kpi:      { bg:"#08160e", border:"rgba(34,197,94,0.45)"  },
-};
 
 const ALL_DEPARTMENTS = [
   {
@@ -201,25 +195,6 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
           })}
         </div>
       )}
-
-      {/* EO Agent cards */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
-        {EO_AGENTS.map(a => {
-          const meta = AGENT_META[a.id] || { bg:C.card2, border:C.border };
-          return (
-            <div key={a.id} onClick={() => setChatAgent(a)} style={{ background:meta.bg, border:"1px solid "+meta.border, borderRadius:16, padding:22, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", gap:12 }}>
-              <div style={{ width:72, height:72, background:a.color+"20", border:"2px solid "+a.color+"55", borderRadius:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:34 }}>{a.icon}</div>
-              <div>
-                <div style={{ fontSize:14, fontWeight:800, color:a.color, marginBottom:4 }}>{a.name}</div>
-                <div style={{ fontSize:11, color:C.muted, lineHeight:1.5 }}>{a.role}</div>
-              </div>
-              <div style={{ borderTop:"1px solid "+a.color+"18", width:"100%", paddingTop:12 }}>
-                <button style={{ width:"100%", background:a.color+"15", border:"1px solid "+a.color+"33", borderRadius:8, padding:"8px 0", color:a.color, fontSize:12, fontWeight:700, cursor:"pointer" }}>Open Session →</button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
       {/* Agent large cards — consistent with all other tabs */}
       <div style={{ marginTop:32, marginBottom:24 }}>
