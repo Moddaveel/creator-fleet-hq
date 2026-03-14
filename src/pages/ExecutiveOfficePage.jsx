@@ -2,6 +2,7 @@ import { useState } from "react";
 import { C, ALERTS } from "../constants";
 import { EO_AGENTS, BS_AGENTS, CS_AGENTS, MONO_AGENTS, PUB_AGENTS } from "../data/agents";
 import AgentChat from "../components/AgentChat";
+import AgentButton from "../components/AgentButton";
 import Sect from "../components/Sect";
 
 const ALERT_STYLE = {
@@ -201,14 +202,6 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
         </div>
       )}
 
-      {/* Command Staff */}
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
-        <div style={{ background:"linear-gradient(135deg,"+C.purple+"33,"+C.neon+"22)", border:"1px solid "+C.purple+"44", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:C.purple }}>
-          🧠 Command Staff
-        </div>
-        <div style={{ fontSize:12, color:C.muted }}>Direct executive agents — your primary interface</div>
-      </div>
-
       {/* EO Agent cards */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
         {EO_AGENTS.map(a => {
@@ -226,6 +219,19 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
             </div>
           );
         })}
+      </div>
+
+      {/* Agent large cards — consistent with all other tabs */}
+      <div style={{ marginTop:32, marginBottom:24 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
+          <div style={{ background:"linear-gradient(135deg,"+C.purple+"33,"+C.neon+"22)", border:"1px solid "+C.purple+"44", borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:800, color:C.purple }}>⚡ Command Staff</div>
+          <div style={{ fontSize:12, color:C.muted }}>Hover to hear from them — click to open a session</div>
+        </div>
+        <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
+          {EO_AGENTS.map(a => (
+            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
+          ))}
+        </div>
       </div>
 
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
