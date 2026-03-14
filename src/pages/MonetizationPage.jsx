@@ -145,6 +145,19 @@ export default function MonetizationPage() {
         })}
       </div>
 
+      {/* Agent large cards */}
+      <div style={{ marginTop:24 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
+          <div style={{ background:'rgba(34,197,94,0.15)', border:'1px solid rgba(34,197,94,0.35)', borderRadius:10, padding:'6px 16px', fontSize:13, fontWeight:800, color:'#22c55e' }}>Monetization Agents</div>
+          <div style={{ fontSize:12, color:'#64748b' }}>Hover to hear from them — click to open a session</div>
+        </div>
+        <div style={{ display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center', padding:'24px', background:'#12121a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16 }}>
+          {MONO_AGENTS.map(a => (
+            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
+          ))}
+        </div>
+      </div>
+
       {chatAgent && <AgentChat agent={chatAgent} onClose={() => setChatAgent(null)} />}
     </div>
   );

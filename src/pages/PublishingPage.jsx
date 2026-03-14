@@ -393,6 +393,19 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
               ))}
             </div>
 
+            {/* Agent large cards */}
+            <div style={{ marginTop:8, marginBottom:24 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
+                <div style={{ background:'rgba(59,130,246,0.15)', border:'1px solid rgba(59,130,246,0.35)', borderRadius:10, padding:'6px 16px', fontSize:13, fontWeight:800, color:'#3b82f6' }}>Publishing Agents</div>
+                <div style={{ fontSize:12, color:'#64748b' }}>Hover to hear from them — click to open a session</div>
+              </div>
+              <div style={{ display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center', padding:'24px', background:'#12121a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16 }}>
+                {PUB_AGENTS.map(a => (
+                  <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
+                ))}
+              </div>
+            </div>
+
             <Card>
               <Sect>Publishing SLA — Targets</Sect>
               {[
