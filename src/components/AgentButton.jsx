@@ -66,7 +66,11 @@ export default function AgentButton({ agent, onClick, large }) {
           {agent.icon}
         </button>
         <div style={{ marginTop:10, textAlign:"center" }}>
-          <div style={{ fontSize:12, fontWeight:800, color:agent.color }}>{agent.name}</div>
+          <div style={{ display:"flex", alignItems:"baseline", gap:6 }}>
+              {agent.codename && <div style={{ fontSize:14, fontWeight:900, color:agent.color, letterSpacing:"-0.01em" }}>{agent.codename}</div>}
+              {agent.codename && <div style={{ fontSize:10, color:agent.color+"99", fontWeight:700 }}>dept. head</div>}
+            </div>
+            <div style={{ fontSize:12, fontWeight:800, color:agent.codename?agent.color+"cc":agent.color }}>{agent.name}</div>
           <div style={{ fontSize:10, color:"#64748b", marginTop:2, lineHeight:1.4 }}>{agent.role}</div>
           <button onClick={onClick} style={{ marginTop:8, background:agent.color+"15", border:"1px solid "+agent.color+"33", borderRadius:7, padding:"5px 14px", color:agent.color, fontSize:11, fontWeight:700, cursor:"pointer" }}>Open Session</button>
         </div>

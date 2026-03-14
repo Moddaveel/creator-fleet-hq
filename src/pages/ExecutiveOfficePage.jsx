@@ -25,6 +25,7 @@ const ALL_DEPARTMENTS = [
   {
     id:"brand",
     label:"Brand Strategy",
+    codename:"Northstar",
     icon:"🎯",
     color:"#d946ef",
     nav:"brand",
@@ -34,6 +35,7 @@ const ALL_DEPARTMENTS = [
   {
     id:"studio",
     label:"Content Studio",
+    codename:"Foundry",
     icon:"🎬",
     color:"#a855f7",
     nav:"studio",
@@ -43,6 +45,7 @@ const ALL_DEPARTMENTS = [
   {
     id:"monetization",
     label:"Monetization",
+    codename:"Vault",
     icon:"💰",
     color:"#22c55e",
     nav:"monetization",
@@ -52,6 +55,7 @@ const ALL_DEPARTMENTS = [
   {
     id:"publishing",
     label:"Publishing",
+    codename:"Atlas",
     icon:"🚀",
     color:"#3b82f6",
     nav:"publishing",
@@ -167,7 +171,10 @@ export default function ExecutiveOfficePage({ approvals, navigateTo }) {
                 <div onClick={() => toggleDept(dept.id)} style={{ padding:"12px 20px", display:"flex", alignItems:"center", gap:12, cursor:"pointer", background:isOpen?dept.color+"08":"transparent" }}>
                   <div style={{ width:36, height:36, background:dept.color+"20", border:"1px solid "+dept.color+"44", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{dept.icon}</div>
                   <div style={{ flex:1 }}>
-                    <div style={{ fontSize:13, fontWeight:800, color:dept.color }}>{dept.label}</div>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <div style={{ fontSize:13, fontWeight:800, color:dept.color }}>{dept.label}</div>
+                      {dept.codename && <div style={{ background:dept.color+"22", border:"1px solid "+dept.color+"44", borderRadius:5, padding:"1px 8px", fontSize:10, fontWeight:800, color:dept.color }}>{dept.codename}</div>}
+                    </div>
                     <div style={{ fontSize:11, color:C.muted }}>{dept.description}</div>
                   </div>
                   <div style={{ display:"flex", alignItems:"center", gap:10 }}>
