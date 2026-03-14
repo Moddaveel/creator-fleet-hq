@@ -15,7 +15,7 @@ const PLATFORMS = [
   { label:"Twitch",    icon:"🟣", color:TWITCH_COLOR },
   { label:"YouTube",   icon:"🔴", color:"#FF0000"   },
   { label:"Instagram", icon:"🟠", color:"#f97316"   },
-  { label:"TikTok",    icon:"🎵", color:"#69c9d0"   },
+  { label:"TikTok",    icon:"⚫", color:"#69c9d0"   },
 ];
 
 const RALPH_LOOP = {
