@@ -77,7 +77,7 @@ function MonthCalendar({ queue, year, month }) {
     <div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4, marginBottom:4 }}>
         {DAY_NAMES.map(d => (
-          <div key={d} style={{ textAlign:"center", fontSize:11, fontWeight:800, color:C.blue, padding:"6px 0", textTransform:"uppercase", letterSpacing:"0.08em" }}>{d}</div>
+          <div key={d} style={{ textAlign:"center", fontSize:11, fontWeight:800, color:C.purple, padding:"6px 0", textTransform:"uppercase", letterSpacing:"0.08em" }}>{d}</div>
         ))}
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
@@ -86,9 +86,9 @@ function MonthCalendar({ queue, year, month }) {
           const posts = getPostsForDay(day);
           const isTod = isToday(day);
           return (
-            <div key={day} style={{ minHeight:90, borderRadius:10, padding:8, background:isTod?C.purple+"18":C.blue+"08", border:(isTod?"2px":"1.5px")+" solid "+(isTod?C.purple:C.blue+"66"), display:"flex", flexDirection:"column", gap:3, boxShadow:isTod?"0 0 10px "+C.purple+"44":"none" }}>
+            <div key={day} style={{ minHeight:90, borderRadius:10, padding:8, background:isTod?C.neon+"18":C.purple+"0d", border:(isTod?"2px":"1.5px")+" solid "+(isTod?C.neon:C.purple+"77"), display:"flex", flexDirection:"column", gap:3, boxShadow:isTod?"0 0 12px "+C.neon+"55":"0 0 4px "+C.purple+"22" }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                <div style={{ width:22, height:22, borderRadius:11, background:isTod?C.purple:C.blue+"25", border:"1px solid "+(isTod?C.purple:C.blue+"55"), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:isTod?"#fff":C.blue }}>{day}</div>
+                <div style={{ width:22, height:22, borderRadius:11, background:isTod?C.neon:C.purple+"30", border:"1px solid "+(isTod?C.neon:C.purple+"88"), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:isTod?"#fff":C.purple }}>{day}</div>
                 {posts.length > 2 && <div style={{ fontSize:9, color:C.muted, fontWeight:600 }}>+{posts.length-2}</div>}
               </div>
               {posts.slice(0,2).map((p, pi) => {
