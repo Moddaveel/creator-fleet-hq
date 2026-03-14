@@ -56,11 +56,6 @@ function RalphLoopStatus() {
   );
 }
 
-// Cycle of vivid border colors for calendar day cells
-const DAY_COLORS = [
-  "#a855f7","#3b82f6","#22c55e","#f97316","#ec4899","#eab308","#06b6d4",
-];
-
 function MonthCalendar({ queue, year, month }) {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -81,22 +76,19 @@ function MonthCalendar({ queue, year, month }) {
   return (
     <div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4, marginBottom:4 }}>
-        {DAY_NAMES.map((d,i) => (
-          <div key={d} style={{ textAlign:"center", fontSize:11, fontWeight:800, color:DAY_COLORS[i], padding:"6px 0", textTransform:"uppercase", letterSpacing:"0.08em" }}>{d}</div>
+        {DAY_NAMES.map(d => (
+          <div key={d} style={{ textAlign:"center", fontSize:11, fontWeight:800, color:C.blue, padding:"6px 0", textTransform:"uppercase", letterSpacing:"0.08em" }}>{d}</div>
         ))}
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
         {cells.map((day, i) => {
           if (!day) return <div key={"e"+i} style={{ minHeight:90, borderRadius:10 }} />;
-          const posts  = getPostsForDay(day);
-          const isTod  = isToday(day);
-          const col    = DAY_COLORS[(i + firstDay) % 7];
-          const border = isTod ? "2px solid "+C.purple : "1.5px solid "+col+"99";
-          const bg     = isTod ? C.purple+"18" : col+"0a";
+          const posts = getPostsForDay(day);
+          const isTod = isToday(day);
           return (
-            <div key={day} style={{ minHeight:90, borderRadius:10, padding:8, background:bg, border, display:"flex", flexDirection:"column", gap:3, boxShadow: isTod ? "0 0 10px "+C.purple+"44" : "none" }}>
+            <div key={day} style={{ minHeight:90, borderRadius:10, padding:8, background:isTod?C.purple+"18":C.blue+"08", border:(isTod?"2px":"1.5px")+" solid "+(isTod?C.purple:C.blue+"66"), display:"flex", flexDirection:"column", gap:3, boxShadow:isTod?"0 0 10px "+C.purple+"44":"none" }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                <div style={{ width:22, height:22, borderRadius:11, background:isTod?C.purple:col+"33", border:"1px solid "+col+"66", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:isTod?"#fff":col }}>{day}</div>
+                <div style={{ width:22, height:22, borderRadius:11, background:isTod?C.purple:C.blue+"25", border:"1px solid "+(isTod?C.purple:C.blue+"55"), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:isTod?"#fff":C.blue }}>{day}</div>
                 {posts.length > 2 && <div style={{ fontSize:9, color:C.muted, fontWeight:600 }}>+{posts.length-2}</div>}
               </div>
               {posts.slice(0,2).map((p, pi) => {
@@ -343,20 +335,13 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
         {/* CALENDAR */}
         {subpage==="calendar" && (
           <div style={{ padding:24, maxWidth:1100, margin:"0 auto" }}>
-            {/* Header row */}
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <div style={{ background:C.blue+"22", border:"1px solid "+C.blue+"44", borderRadius:10, padding:"6px 14px", fontSize:15, fontWeight:800, color:C.blue }}>Publishing Calendar</div>
-                <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, padding:"4px 12px", fontSize:12, color:C.muted }}>{scheduledCount} posts scheduled</div>
-              </div>
+            {/* Header */}
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+              <div style={{ background:C.blue+"22", border:"1px solid "+C.blue+"44", borderRadius:10, padding:"6px 14px", fontSize:15, fontWeight:800, color:C.blue }}>Publishing Calendar</div>
+              <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:8, padding:"4px 12px", fontSize:12, color:C.muted }}>{scheduledCount} posts scheduled</div>
             </div>
 
-            {/* Month navigator — above the calendar */}
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:16, marginBottom:16, padding:"12px 0", background:C.card, border:"1px solid "+C.border, borderRadius:14 }}>
-              <button onClick={prevMonth} style={{ background:"rgba(168,85,247,0.15)", border:"1px solid "+C.purple+"66", borderRadius:9, width:36, height:36, color:C.purple, fontSize:20, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800 }}>&#8249;</button>
-              <div style={{ fontSize:20, fontWeight:900, minWidth:200, textAlign:"center", background:"linear-gradient(135deg,"+C.purple+","+C.blue+")", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{MONTH_NAMES[calMonth]} {calYear}</div>
-              <button onClick={nextMonth} style={{ background:"rgba(168,85,247,0.15)", border:"1px solid "+C.purple+"66", borderRadius:9, width:36, height:36, color:C.purple, fontSize:20, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800 }}>&#8250;</button>
-            </div>
+            {/* Platforms legend — very top */}
             <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16, padding:"12px 16px", background:C.card, border:"1px solid "+C.border, borderRadius:12 }}>
               <span style={{ fontSize:11, color:C.muted, fontWeight:700, marginRight:4, alignSelf:"center" }}>PLATFORMS</span>
               {Object.entries(PLATFORM_META).map(([k,v]) => (
@@ -369,6 +354,13 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <div style={{ width:12, height:12, borderRadius:6, background:C.purple }} />
                 <span style={{ fontSize:11, color:C.muted }}>Today</span>
               </div>
+            </div>
+
+            {/* Month navigator — directly above calendar */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:16, marginBottom:12, padding:"12px 0", background:C.card, border:"1px solid "+C.border, borderRadius:14 }}>
+              <button onClick={prevMonth} style={{ background:"rgba(168,85,247,0.15)", border:"1px solid "+C.purple+"66", borderRadius:9, width:36, height:36, color:C.purple, fontSize:20, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800 }}>&#8249;</button>
+              <div style={{ fontSize:20, fontWeight:900, minWidth:200, textAlign:"center", background:"linear-gradient(135deg,"+C.purple+","+C.blue+")", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{MONTH_NAMES[calMonth]} {calYear}</div>
+              <button onClick={nextMonth} style={{ background:"rgba(168,85,247,0.15)", border:"1px solid "+C.purple+"66", borderRadius:9, width:36, height:36, color:C.purple, fontSize:20, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800 }}>&#8250;</button>
             </div>
             <div style={{ background:C.card, border:"1px solid "+C.border, borderRadius:14, padding:20, marginBottom:16 }}>
               <MonthCalendar queue={publishQueue} year={calYear} month={calMonth} />
