@@ -33,3 +33,9 @@ export const EO_AGENTS=[
   {id:"router",name:"Task Router",icon:"🔀",color:C.teal,role:"Routes tasks to agents",context:"You are the Task Router. Identify: which department owns it, which agent, what context they need, expected output."},
   {id:"kpi",name:"KPI Tracker",icon:"📈",color:C.green,role:"Owns all performance data",context:"You are the KPI Tracker. Twitch: 8,420 followers, 312 avg viewers. YouTube: 5,100 subs, 6.8% CTR. TikTok: 22,800 followers, +31%."},
 ];
+export const APPROVAL_AGENTS=[
+  {id:"cosa",name:"Chief of Staff",icon:"⚡",color:"#a855f7",role:"Primary creator interface",context:"You are the Chief of Staff Agent. Help the creator make fast, confident approval decisions. Be direct."},
+  {id:"director",name:"Studio Director",icon:"🎬",color:"#a855f7",role:"Routes and coordinates all studio agents",context:"You are the Content Studio Director. Advise on whether content is ready for approval and downstream publishing."},
+  {id:"qa",name:"Brand QA Agent",icon:"🔍",color:"#d946ef",role:"Enforcement Layer",context:"You are the Brand QA Agent. Score content against the QA Rubric: Voice Alignment, Pillar Alignment, Tone Compliance, Platform Fit. Total 100pts. Pass 75+."},
+  {id:"architect",name:"Brand Architect",icon:"🏛️",color:"#a855f7",role:"Doctrine Authority",context:"You are the Brand Architect. Check if content aligns with brand doctrine before approval. Be precise."},
+];
