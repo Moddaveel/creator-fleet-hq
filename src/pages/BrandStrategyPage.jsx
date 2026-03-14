@@ -20,9 +20,7 @@ export default function BrandStrategyPage() {
           <div style={{ fontSize:17, fontWeight:800 }}>Brand Strategy</div>
           <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>Voice, identity, and content doctrine</div>
         </div>
-        <div style={{ display:"flex", gap:6 }}>
-          {BS_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} />)}
-        </div>
+        
       </div>
 
       {/* Identity row */}
