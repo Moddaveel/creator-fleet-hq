@@ -420,7 +420,11 @@ export default function PublishingPage({ publishQueue, setPublishQueue, toast })
                 <div style={{ fontSize:12, color:C.muted }}>Hover to hear from them - click to open a session</div>
               </div>
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center", padding:"24px", background:"#12121a", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16 }}>
-                {PUB_AGENTS.map(a => <AgentButton key={a.id} agent={a} onClick={()=>setChatAgent(a)} large />)}
+                <AgentButton agent={PUB_AGENTS[0]} onClick={() => setChatAgent(PUB_AGENTS[0])} large />
+              <div style={{width:'100%', height:'1px', background:'rgba(255,255,255,0.06)', margin:'8px 0'}} />
+              <div style={{display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center'}}>
+                {PUB_AGENTS.slice(1).map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+              </div>
               </div>
             </div>
           </div>

@@ -24,6 +24,7 @@ const BRAND_ICONS = {
 export default function MonetizationPage() {
   const [deals, setDeals] = useState(DEAL_PIPELINE);
   const [chatAgent, setChatAgent] = useState(null);
+  const [head, ...rest] = MONO_AGENTS;
   const [expanded, setExpanded] = useState(new Set());
   const toggleExpand = id => setExpanded(prev => {
     const next = new Set(prev);
@@ -150,9 +151,11 @@ export default function MonetizationPage() {
           <div style={{ fontSize:12, color:'#64748b' }}>Hover to hear from them — click to open a session</div>
         </div>
         <div style={{ display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center', padding:'24px', background:'#12121a', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16 }}>
-          {MONO_AGENTS.map(a => (
-            <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />
-          ))}
+          <AgentButton agent={head} onClick={() => setChatAgent(head)} large />
+          <div style={{width:'100%', height:'1px', background:'rgba(255,255,255,0.06)', margin:'8px 0'}} />
+          <div style={{display:'flex', gap:24, flexWrap:'wrap', justifyContent:'center'}}>
+            {rest.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+          </div>
         </div>
       </div>
 
