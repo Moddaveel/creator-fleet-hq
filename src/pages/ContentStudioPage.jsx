@@ -174,11 +174,11 @@ export default function ContentStudioPage({ clips, setClips }) {
             return (<>
               {head && (
                 <div style={{ display:"flex", justifyContent:"center", paddingBottom:24, borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
-                  <AgentButton agent={head} onClick={() => setChatAgent(a)} large />
+                  <AgentButton agent={head} onClick={() => setChatAgent(head)} large />
                 </div>
               )}
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", justifyContent:"center" }}>
-                {specialists.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(a)} large />)}
+                {specialists.map(a => <AgentButton key={a.id} agent={a} onClick={() => setChatAgent(head)} large />)}
               </div>
             </>);
           })()}
