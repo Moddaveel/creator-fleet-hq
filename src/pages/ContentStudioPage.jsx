@@ -61,7 +61,7 @@ function ClipCard({ clip, accent, onPlay }) {
   );
 }
 
-function PlatformSection({ platform, clips }) {
+function PlatformSection({ platform, clips, onPlay }) {
   const platformClips = clips.filter(c => platform.keys.some(k => c.platforms?.includes(k)));
   return (
     <div style={{ background:platform.bg, border:"1px solid "+platform.border, borderRadius:14, padding:20, marginBottom:14 }}>
@@ -222,7 +222,7 @@ export default function ContentStudioPage({ clips, setClips }) {
       </div>
 
       {/* Platform Sections */}
-      {PLATFORMS.map(p => <PlatformSection key={p.id} platform={p} clips={clips} />)}
+      {PLATFORMS.map(p => <PlatformSection key={p.id} platform={p} clips={clips} onPlay={setPlayingClip} />)}
 
       {/* Studio Agents */}
       <div style={{ marginTop:32 }}>
