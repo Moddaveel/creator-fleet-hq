@@ -93,7 +93,7 @@ function PlatformSection({ platform, clips, onPlay }) {
                   <span style={{ background:s.color+"20", color:s.color, borderRadius:8, padding:"1px 7px", fontSize:10, fontWeight:700 }}>{group.length}</span>
                 </div>
                 {group.length > 0
-                  ? group.map(c => <ClipCard key={c.clip_id} clip={c} accent={platform.accent} />)
+                  ? group.map(c => <ClipCard key={c.clip_id} clip={c} accent={platform.accent} onPlay={() => onPlay(c)} />)
                   : <div style={{ border:"1px dashed "+platform.accent+"20", borderRadius:8, padding:"14px 0", textAlign:"center", color:C.muted, fontSize:11 }}>Empty</div>}
               </div>
             );
