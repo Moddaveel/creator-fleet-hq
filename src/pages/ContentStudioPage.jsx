@@ -20,8 +20,8 @@ const STATUSES = [
 
 function VideoModal({ clip, onClose }) {
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:800, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={onClose}>
-      <div style={{ background:"#1a1025", border:"1px solid "+C.purple+"44", borderRadius:16, padding:24, width:680, maxWidth:"95vw" }} onClick={e=>e.stopPropagation()}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:800, display:"flex", alignItems:"center", justifyContent:"center" }} onMouseDown={onClose}>
+      <div style={{ background:"#1a1025", border:"1px solid "+C.purple+"44", borderRadius:16, padding:24, width:680, maxWidth:"95vw" }} onMouseDown={e=>e.stopPropagation()}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
           <div>
             <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:4 }}>{clip.title}</div>
