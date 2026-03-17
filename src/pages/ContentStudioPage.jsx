@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { C, momentColor } from "../constants";
 import { CS_AGENTS } from "../data/agents";
 import Chip from "../components/Chip";
@@ -114,6 +114,13 @@ export default function ContentStudioPage({ clips, setClips }) {
   const [vods, setVods]           = useState([]);
   const [processing, setProcessing] = useState(null);
   const [playingClip, setPlayingClip] = useState(null);
+
+  useEffect(() => {
+    fetch("https://chic-patience-production-5712.up.railway.app/clips")
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data) && data.length > 0) setClips(data); })
+      .catch(e => console.error("Failed to load clips", e));
+  }, []);
 
   function handleDrop(e) { e.preventDefault(); setDragging(false); processVods(Array.from(e.dataTransfer?.files||[])); }
   function handleFileInput(e) { processVods(Array.from(e.target.files||[])); }
